@@ -1,0 +1,6 @@
+=== Fri Nov 13 12:29:52 PM UTC 2026 : /workspace/projects/AERO-BLS/openfoam_cases/naca0012tr_aoa5_re360k ===
+warm-started from /workspace/projects/AERO-BLS/openfoam_cases/naca0012_aoa5_re360k//workspace/projects/AERO-BLS/openfoam_cases/naca0012_aoa5_re360k/4000
+    Mesh non-orthogonality Max: 82.67556 average: 41.93826
+    Max skewness = 2.787854 OK.
+Mesh OK.
+=== Fri Nov 13 12:35:29 PM UTC 2026 : finished rc=0 ===

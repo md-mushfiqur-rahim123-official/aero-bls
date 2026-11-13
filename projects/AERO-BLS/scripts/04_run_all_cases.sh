@@ -25,25 +25,46 @@ open(path, "w").write(text)
 PYEOF
 }
 
+warm_start_transition() {
+    local case_dir="$1"
+    local base="$(basename "$case_dir")"
+    case "$base" in
+        *tr_aoa*) ;;
+        *) return 0 ;;
+    esac
+    if grep -q "nonuniform" "$case_dir/0/U" 2>/dev/null; then
+        return 0
+    fi
+    local sib="$ROOT/openfoam_cases/$(echo "$base" | sed 's/tr//; s/_re1e6$//')"
+    local last="$(ls -d "$sib"/[1-9]* 2>/dev/null | sort -n | tail -1)"
+    if [ -n "$last" ] && [ -f "$last/U" ]; then
+        for f in U p k omega nut; do
+            cp "$last/$f" "$case_dir/0/$f" 2>/dev/null || true
+        done
+        echo "warm-started from $sib/$last"
+    fi
+}
+
 run_case() {
     local case_dir="$1"
     local log="$ROOT/logs/$(basename "$case_dir").log"
     {
         echo "=== $(date) : $case_dir ==="
+        warm_start_transition "$case_dir"
         if [ ! -d "$case_dir/constant/polyMesh" ] || [ ! -f "$case_dir/constant/polyMesh/points" ]; then
             gmshToFoam "$(cat "$case_dir/mesh_source.txt")" \
-                -case "$case_dir" > /dev/null 2>&1 || { echo "gmshToFoam FAILED"; exit 1; }
+                -case "$case_dir" < /dev/null > /dev/null 2>&1 || { echo "gmshToFoam FAILED"; exit 1; }
             fix_empty_patches "$case_dir"
         fi
-        checkMesh -case "$case_dir" 2>&1 | grep -E "Mesh OK|non-orthogonality|skewness|Failed" || true
-        simpleFoam -case "$case_dir" > /dev/null 2>&1
+        checkMesh -case "$case_dir" < /dev/null 2>&1 | grep -E "Mesh OK|non-orthogonality|skewness|Failed" || true
+        simpleFoam -case "$case_dir" < /dev/null > /dev/null 2>&1
         local rc=$?
         echo "=== $(date) : finished rc=$rc ==="
     } > "$log" 2>&1
     grep -E "^===|Mesh OK|Failed" "$log" | tail -3
 }
 
-export -f run_case fix_empty_patches
+export -f run_case warm_start_transition fix_empty_patches
 export ROOT
 
 mapfile -t CASES < "$MANIFEST"

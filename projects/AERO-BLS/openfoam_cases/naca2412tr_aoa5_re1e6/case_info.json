@@ -1,0 +1,14 @@
+{
+  "airfoil": "naca2412tr",
+  "alpha_deg": 5.0,
+  "reynolds": 1000000.0,
+  "u_inf": 15.0,
+  "nu": 1.5e-05,
+  "k_inf": 0.0003375,
+  "omega_inf": 3.354101966249685,
+  "nut_inf": 0.00010062305898749053,
+  "chord": 1.0,
+  "span": 0.1,
+  "aref": 0.1,
+  "mesh": "/workspace/projects/AERO-BLS/mesh/naca2412_medium.msh"
+}

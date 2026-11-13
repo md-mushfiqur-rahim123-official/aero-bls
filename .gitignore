@@ -3,5 +3,6 @@ openfoam_cases/*/[0-9]*/
 openfoam_cases/*/constant/polyMesh/
 openfoam_cases/*/VTK/
 data/fields/
+**/data/fields/
 __pycache__/
 *.pyc

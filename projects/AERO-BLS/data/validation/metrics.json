@@ -1,19 +1,33 @@
 {
+  "low_re_sandia": {
+    "FT": {
+      "cl_mae_prestall": 0.029037234297295832,
+      "cd_mae_prestall": 0.01023697600375,
+      "cl_mae_all": 0.2925966510533775
+    },
+    "TR": {
+      "cl_mae_prestall": 0.04042051592555366,
+      "cd_mae_prestall": 0.006847830369583333,
+      "cl_mae_all": 0.2808363048053322
+    }
+  },
   "cp_mae_gregory": {
     "0": 0.019247415472054576,
     "10": 0.11909719852465889,
     "15": 0.6875728784724939
   },
   "naca0012_ladson": {
-    "cl_mae_pre_stall": 0.037921829421346344,
-    "cl_mae_pre_stall_pct": 5.107377748401505,
-    "cd_mae_pre_stall_pct": 100.70470278287276,
-    "cl_mae_abbott": 0.0580782566849569,
-    "cl_mae_gregory": 0.05475635926064762,
-    "cd_mae_ladson_abs": 0.009894780155659713,
-    "alpha_stall_CFD_deg": 18.0,
+    "cl_mae_pre_stall": 0.04042051592555366,
+    "cl_mae_pre_stall_pct": 8.673285968544755,
+    "cl_mae_attached": 0.037921829421346344,
+    "cl_mae_attached_pct": 5.107377748401505,
+    "cd_mae_pre_stall_pct": 125.14846738735073,
+    "cl_mae_abbott": 0.0991531751683185,
+    "cl_mae_gregory": 0.09798175276144583,
+    "cd_mae_ladson_abs": 0.013974525959301603,
+    "alpha_stall_CFD_deg": 12.0,
     "alpha_stall_Ladson_deg": 17.13,
-    "cl_max_CFD": 1.017480391975,
+    "cl_max_CFD": 1.051887677375,
     "cl_max_Ladson": 1.6116
   },
   "cfl3d_sst_verification": [
@@ -42,9 +56,9 @@
       "Cl0_CFD": 0.0061903446231875,
       "Cl0_Abbott_transcribed": 0.0061903446231875,
       "alpha0_Abbott_transcribed": 0.0,
-      "Clmax_CFD": 1.017480391975,
+      "Clmax_CFD": 1.24456445975,
       "Clmax_Abbott_transcribed": 1.5,
-      "alpha_stall_CFD": 18.0,
+      "alpha_stall_CFD": 15.0,
       "alpha_stall_Abbott_transcribed": 16.0
     },
     {
@@ -71,6 +85,7 @@
   "notes": [
     "CFD at Re=1e6, fully turbulent k-omega SST; Ladson data Re=6e6, tripped.",
     "Fully turbulent CFD overpredicts drag vs tripped experiment; expected bias.",
+    "SAND80-2114 comparison at Re=3.6e5 free transition: gamma-Re_thetat closure expected closer than fully turbulent.",
     "Gregory Cp data Re=2.88e6; TMR recommends it for surface-pressure validation."
   ]
 }

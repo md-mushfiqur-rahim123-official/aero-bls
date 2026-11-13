@@ -5,9 +5,16 @@ stall, and passive drag reduction on the NACA 0012, 2412, and 4412 sections.
 
 - **Physics:** 2D incompressible RANS, k–ω SST closure (OpenFOAM v2412, `simpleFoam`, SIMPLEC)
 - **Mesh:** structured polar O-grid, y⁺ ≈ 0.4 at Re = 10⁶, farfield at 20 chords
-- **Matrix:** 15 core cases (3 airfoils × α = 0°, 5°, 10°, 15°, 18° at Re = 10⁶)
-  + Reynolds sensitivity (10⁵, 3×10⁵) + grid independence (coarse/medium/fine)
-  + trailing-edge serration cases
+- **Matrix:** 21 core cases (3 airfoils × α = 0°, 5°, 10°, 12°, 15°, 18°, 20° at Re = 10⁶)
+  + full Reynolds sweep (Re = 10⁵, 3×10⁵ for **all three** airfoils, α = 0–18°)
+  + grid independence (coarse/medium/fine) + farfield/convergence verification
+  + trailing-edge serration and leading-edge tubercle (2D surrogate) cases
+  + transition-sensitive repeats with the γ–Re_θt (Langtry–Menter) closure:
+    NACA 0012/2412/4412 × α = 0–18° × Re = 10⁵/3×10⁵/10⁶ (full factorial, 45 cases),
+    warm-started from the converged fully turbulent siblings
+  + low-Reynolds free-transition validation at Re = 3.6×10⁵ vs Sandia SAND80-2114
+    (Sheldahl & Klimas): NACA 0012 fully turbulent + γ–Re_θt, α = 0–15° (10 cases)
+  — **121 cases total**
 - **Validation:** NASA Turbulence Modeling Resource NACA 0012 datasets
   (Ladson TM-4074 tripped forces, Gregory & O'Reilly R&M 3726, Abbott & von Doenhoff)
   and NASA CFL3D SST reference results
@@ -18,7 +25,7 @@ stall, and passive drag reduction on the NACA 0012, 2412, and 4412 sections.
 projects/AERO-BLS/
 ├── airfoils/            # analytic NACA 4-digit coordinates (638 pts)
 ├── mesh/                # generated Gmsh v2.2 hex meshes + metadata
-├── openfoam_cases/      # base_case template + 22 staged cases
+├── openfoam_cases/      # base_case templates + 121 staged cases
 ├── scripts/             # 00–08 pipeline (see below)
 ├── data/
 │   ├── experimental/    # NASA TMR .dat reference files
@@ -40,8 +47,8 @@ projects/AERO-BLS/
 | `03_prepare_cases.py` | Stage `base_case`, substitute BC tokens per case |
 | `04_run_all_cases.sh` | Batch runner over `run_manifest.txt` (NPAR parallel) |
 | `05_postprocess.py` | Forces (tail-averaged), Cp, Cf, separation, residuals → `data/results/` |
-| `06_generate_figures.py` | 9 publication figures → `latex/figures/` |
-| `07_validate_vs_experiment.py` | CFD vs Ladson/Gregory/Abbott + CFL3D SST → `data/validation/` |
+| `06_generate_figures.py` | 16 publication figures → `latex/figures/` |
+| `07_validate_vs_experiment.py` | CFD vs Ladson/Gregory/Abbott + CFL3D SST + Sandia SAND80-2114 → `data/validation/` |
 | `08_build_report.py` | `numbers.tex` macros + appendix figure + tectonic compile |
 
 ## Reproducing from scratch
@@ -57,7 +64,9 @@ source $MAMBA_ROOT_PREFIX/envs/main/etc/bashrc   # skip if using distro OpenFOAM
 # 3. Geometry + meshes
 python3 scripts/01_fetch_airfoil_coords.py
 python3 scripts/02_generate_mesh.py --airfoil naca0012 --output mesh/naca0012_medium.msh --density medium
-#    (repeat for 2412/4412, coarse/fine, --serration variant)
+#    (repeat for 2412/4412, coarse/fine, --serration/--tubercle variants)
+#    NOTE: cambered airfoils need the O-grid centre on the camber line to keep
+#    mesh quality acceptable:  add --centre-y 0.019 (2412) / --centre-y 0.0375 (4412)
 
 # 4. Stage + run all cases
 python3 scripts/03_prepare_cases.py
@@ -77,14 +86,24 @@ python3 poster/make_poster.py                 # poster/poster.html (A0 landscape
 
 ## Key results (see `latex/main.pdf` for full detail)
 
-- Pre-stall lift on NACA 0012 within a few % (MAE) of the tripped Ladson data;
-  lift curve bracketed by the three experimental datasets and close to NASA's
-  CFL3D SST reference.
+- Pre-stall lift on NACA 0012 within 5.1% (MAE) of the tripped Ladson data over
+  the attached range (α ≤ 10°); lift curve bracketed by the three experimental
+  datasets and close to NASA's CFL3D SST reference.
 - Separation onset by upstream migration of the C_f = 0 point: attached through
-  α = 10°, x/c ≈ 0.2 at α = 15°, with a ~5× drag rise.
-- Maximum-lift ordering 4412 > 2412 > 0012; stall softens with camber.
-- Re = 10⁵ vs 10⁶ at α = 10°: lower lift, higher drag, earlier separation.
-- Serrated trailing edge reduces drag at moderate α in the 2D surrogate.
+  α = 10°–12°, x/c ≈ 0.2 at α = 15° on the production grid, with a ~5× drag rise.
+  Fine-grid repeats (α = 12°, 15°) show the medium grid over-separates at high
+  lift: the fine grid stays attached at α = 15° (C_L 1.24 vs 0.99), so modelled
+  onset is grid-sensitive and bracketed between 12° and 15°.
+- Maximum-lift ordering 4412 (1.476 @ 15°) > 2412 (1.351 @ 18°) > 0012
+  (plateau ≈ 1.05 beyond 12°); stall softens with camber.
+- Full Reynolds sweep (10⁵, 3×10⁵, all three airfoils): attached-range lift
+  drops 6–9% at α = 10° (ordered by camber), but near stall the effect is
+  dramatic — at Re = 10⁵ all three sections are fully separated by α = 18°
+  (separation at the leading edge, C_L max falls 30–45%).
+- Passive devices, 2D surrogates: serrated TE **increases** drag +8.6% at α = 5°
+  (attached) and reduces it −13.6% at α = 15° (separated, base-pressure
+  recovery); tubercle LE surrogate is penalised at every incidence (drag up to
+  +231%, lift up to −51%) — both device classes need spanwise (3D) physics.
 
 ## Known limitations (documented in the paper)
 

@@ -1,0 +1,102 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM                                        |
+|  \\    /   O peration     | Version:  v2412                                 |
+|   \\  /    A nd           |                                                 |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     simpleFoam;
+
+startFrom       startTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         4000;
+
+deltaT          1;
+
+writeControl    timeStep;
+
+writeInterval   1000;
+
+purgeWrite      2;
+
+writeFormat     ascii;
+
+writePrecision  7;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable false;
+
+functions
+{
+    forceCoeffs
+    {
+        type            forceCoeffs;
+        libs            (forces);
+        patches         (airfoil);
+        rho             rhoInf;
+        rhoInf          1.0;
+        liftDir         (-0.30901699 0.95105652 0);
+        dragDir         (0.95105652 0.30901699 0);
+        CofR            (0.25 0 0);
+        pitchAxis       (0 0 1);
+        magUInf         1.500000;
+        lRef            1.0;
+        Aref            0.100000;
+        writeControl    timeStep;
+        writeInterval   1;
+        log             yes;
+    }
+
+    wallShearStress
+    {
+        type            wallShearStress;
+        libs            (fieldFunctionObjects);
+        patches         (airfoil);
+        writeControl    writeTime;
+    }
+
+    surfaces
+    {
+        type            surfaces;
+        libs            (sampling);
+        writeControl    writeTime;
+        surfaceFormat   raw;
+        fields          (p U wallShearStress);
+        surfaces
+        (
+            airfoil
+            {
+                type            patch;
+                patches         (airfoil);
+                interpolate     true;
+            }
+        );
+    }
+
+    residuals
+    {
+        type            residuals;
+        libs            (utilityFunctionObjects);
+        fields          (p U k omega);
+    }
+}
+
+// ************************************************************************* //

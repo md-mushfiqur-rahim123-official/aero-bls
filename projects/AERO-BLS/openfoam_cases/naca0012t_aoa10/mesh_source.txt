@@ -1,0 +1,1 @@
+/workspace/projects/AERO-BLS/mesh/naca0012_tub_medium.msh

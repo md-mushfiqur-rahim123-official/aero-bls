@@ -1,0 +1,23 @@
+# Sheldahl & Klimas (1981), SAND80-2114, Table 2
+# NACA 0012 section lift and drag coefficients
+# Reynolds number 360,000 (reproduced from the tabulated values)
+# U.S. Government work, public domain. DOI: 10.2172/6548367
+# Columns: alpha_deg  Cl  Cd
+# (tabulation covers alpha = 0-180 deg in the source; pre-stall and
+#  early-stall portion used for the present validation is retained here)
+0.0  0.0000  0.0079
+1.0  0.1100  0.0080
+2.0  0.2200  0.0084
+3.0  0.3300  0.0089
+4.0  0.4400  0.0098
+5.0  0.5500  0.0113
+6.0  0.6600  0.0125
+7.0  0.7727  0.0135
+8.0  0.8542  0.0155
+9.0  0.9352  0.0167
+10.0 0.9811  0.0184
+11.0 0.9132  0.0204
+12.0 0.4832  0.0217
+13.0 0.2759  0.0222
+14.0 0.2893  0.1060
+15.0 0.3306  0.1900
