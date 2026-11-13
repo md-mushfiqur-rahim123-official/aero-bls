@@ -337,7 +337,11 @@ def main():
         m[f"NonOrth{dens}"] = q[0] if q else "n/a"
         m[f"NonOrthAvg{dens}"] = q[1] if q else "n/a"
         m[f"Skew{dens}"] = q[2] if q else "n/a"
-    m["GciPct"] = "1" 
+    try:
+        cl_med, cl_fine = float(m["ClMedium"]), float(m["ClFine"])
+        m["GciPct"] = f"{100 * abs(cl_fine - cl_med) / abs(cl_fine):.2f}"
+    except (KeyError, TypeError, ValueError):
+        m["GciPct"] = "n/a"
 
     with open(os.path.join(LATEX, "numbers.tex"), "w") as f:
         for k, v in m.items():
