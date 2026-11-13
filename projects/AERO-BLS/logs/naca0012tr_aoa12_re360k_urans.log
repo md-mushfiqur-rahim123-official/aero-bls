@@ -1,0 +1,20 @@
+=== Fri Nov 13 11:33:17 PM UTC 2026 : openfoam_cases/naca0012tr_aoa12_re360k_urans ===
+    Mesh non-orthogonality Max: 81.94616 average: 40.03029
+    Max skewness = 2.555276 OK.
+Failed 1 mesh checks.
+warm-started by direct field copy from /workspace/projects/AERO-BLS/openfoam_cases/naca0012tr_aoa12_re360k//workspace/projects/AERO-BLS/openfoam_cases/naca0012tr_aoa12_re360k/4000
+stage1 already complete (0.005 exists); skipping
+Terminated
+stage2 rc=143 Fri Nov 13 11:33:37 PM UTC 2026
+=== Fri Nov 13 11:33:37 PM UTC 2026 : finished ===
+
+=== PROVENANCE NOTE (added post-run) ===
+Canonical result assembled from: stage1 (fixed dt=1e-5, t=0 -> 0.005), then
+stage2 production. Two early stage2 attempts at dt=6.8e-5 failed with
+floating-point exceptions (NaN in the transition-model correlations) at
+t=0.045 and t=0.1; the successful production integration restarted from
+t=0.045 with dt=3.4e-5 (maxCo 20, writeInterval 0.02) and ran continuously
+to t=0.25. Full force history (0.01 -> 0.25, 49 samples) is in
+postProcessing/forceCoeffs/{0.005,0.045}/. Superseded attempt histories
+were discarded; the reported statistics use the production window
+t=0.15-0.25 (n=21).

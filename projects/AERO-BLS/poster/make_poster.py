@@ -95,7 +95,7 @@ def main():
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>AERO-BLS: Turbulent Boundary Layer Separation on NACA Airfoils</title>
+<title>AERO-BLS: Transition-Sensitive RANS Modelling of Boundary-Layer Separation on NACA Airfoils at Low Reynolds Number</title>
 <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 <style>
   @page {{ size: A0 landscape; margin: 0; }}
@@ -128,8 +128,8 @@ def main():
 <div class="poster">
   <div class="banner">
     <div>
-      <h1>Turbulent Boundary Layer Separation &amp; Passive Drag Reduction on NACA Airfoils</h1>
-      <p>A validated 2D RANS study with the k–ω SST closure — OpenFOAM v2412 · Re = 10<sup>5</sup>–10<sup>6</sup> · α = 0–18°</p>
+      <h1>Transition-Sensitive RANS Modelling of Boundary-Layer Separation on NACA Airfoils at Low Reynolds Number</h1>
+      <p>A validated 2D study with k–ω SST and γ–Re<sub>θt</sub> closures — OpenFOAM v2412 · Re = 10<sup>5</sup>–10<sup>6</sup> · α = 0–18° · URANS verification subset</p>
     </div>
   </div>
 
@@ -150,11 +150,11 @@ def main():
   <div class="card">
     <h2>2 · Method Pipeline</h2>
     <ul>
-      <li>Analytic NACA 4-digit geometry → serrated / tubercle variants</li>
+      <li>Analytic NACA 4-digit geometry → structured O-grid (serration/tubercle variants retained as 2D negative control, Appendix D)</li>
       <li>Structured O-grid generator → Gmsh v2.2 → gmshToFoam</li>
-      <li>121 scripted OpenFOAM cases (core + full Re sweep + grid/serration/tubercle + 45 γ–Re<sub>θt</sub> transition repeats + 10 low-Re validation)</li>
+      <li>123 scripted OpenFOAM cases (core + full Re sweep + grid + 45 γ–Re<sub>θt</sub> transition repeats + 10 low-Re validation + 2 URANS)</li>
       <li>Forces, Cp, Cf, separation from wall shear reversal</li>
-      <li>Validation: NASA TMR NACA 0012 (Ladson, Gregory, Abbott) + CFL3D SST</li>
+      <li>Primary validation: Sandia SAND80-2114 (Re-matched, Re = 3.6×10<sup>5</sup>, free transition); NASA TMR datasets qualitative only (Re mismatch 3–6×)</li>
     </ul>
     <img src="../latex/figures/fig5_cp_distribution.png" alt="Cp distributions">
   </div>
@@ -162,8 +162,8 @@ def main():
   <div class="card">
     <h2>3 · Validation vs NASA Data</h2>
     {val_table()}
-    <p style="font-size:13pt">CFD: Re = 10<sup>6</sup>, fully turbulent. Ladson: Re = 6×10<sup>6</sup>, tripped.
-       Pre-stall C<sub>L</sub> MAE ≈ {cl_mae_pct:.1f}%.</p>
+    <p style="font-size:13pt">Qualitative comparison only (Re mismatch): CFD Re = 10<sup>6</sup> fully turbulent vs Ladson Re = 6×10<sup>6</sup> tripped.
+       Primary Re-matched validation: Sandia (right). Pre-stall C<sub>L</sub> MAE ≈ {cl_mae_pct:.1f}%.</p>
     <img src="../latex/figures/fig9_validation.png" alt="Validation">
     <img src="../latex/figures/fig14_sandia_validation.png" alt="Low-Re validation">
   </div>
@@ -188,13 +188,14 @@ def main():
       <li>Lowering Re from 10<sup>6</sup> to 10<sup>5</sup> cuts lift and raises drag at fixed incidence; the stall-angle shift is muted by the fully turbulent closure.</li>
       <li>γ–Re<sub>θt</sub> transition repeats (45 cases, full factorial, identical grids): attached-range drag −2–26% (grows as Re falls), laminar separation bubbles at x/c = 0.06–0.75 that the fully turbulent model cannot produce; near stall the closures diverge (ΔC<sub>L</sub> −32% to +30%) as bubble burst reshapes separation.</li>
       <li>Low-Re validation vs Sandia free-transition data (Re = 3.6×10<sup>5</sup>): transition closure cuts attached drag error by 33%; but bubble-burst stall (measured at α = 10–12°) is missed by both steady closures — modelled low-Re stall is an upper bound.</li>
-      <li>2D serrated TE <i>increases</i> attached-flow drag (+8.6% at α = 5°) but cuts drag −13.6% at α = 15° via base-pressure recovery; the 2D tubercle surrogate is a null result — both devices need spanwise (3D) physics.</li>
+      <li>Passive devices as a 2D <i>negative control</i> (Appendix D): serrated TE and tubercle surrogate results confirm that both device classes need spanwise (3D) physics — 2D RANS cannot assess them.</li>
+      <li>URANS verification subset (pimpleFoam, α = 12°/15°, Re = 3.6×10<sup>5</sup>, Co ≤ 20): time-averaged loads quantify the unsteady contribution to the near-stall steady-RANS discrepancy.</li>
     </ul>
     <img src="../latex/figures/fig2_cl_vs_alpha.png" alt="Lift curves">
     <img src="../latex/figures/fig13_transition.png" alt="Transition vs fully turbulent">
   </div>
 
-  <div class="foot">AERO-BLS — fully scripted reproducible workflow (scripts 00–08) · OpenFOAM v2412 ·
+  <div class="foot">AERO-BLS — fully scripted reproducible workflow (scripts 00–10) · OpenFOAM v2412 ·
     Data: NASA Turbulence Modeling Resource, NASA TM-4074, R&amp;M 3726, Abbott &amp; von Doenhoff (1959)</div>
 </div>
 </body>

@@ -1,12 +1,20 @@
 #!/usr/bin/env python3
-"""Validate CFD results against NASA/NACA experimental data.
+"""Validate CFD results against experimental data.
 
-Primary dataset: NACA 0012 from the NASA Langley Turbulence Modeling
-Resource (TMR, https://tmbwg.github.io/turbmodels/naca0012_val.html):
-  - Ladson (NASA TM 4074, 1988): Cl/Cd, Re=6e6, transition tripped
-  - Abbott & von Doenhoff (1959): Cl/Cd, Re=6e6, free transition (digitized)
-  - Gregory & O'Reilly (R&M 3726, 1970): Cl (Re=2.88e6) and Cp (Re=2.88e6)
-  - CFL3D SST reference results (code-to-code verification), Re=6e6
+PRIMARY quantitative validation (Reynolds-matched):
+  - Sheldahl & Klimas, Sandia SAND80-2114 (DOI: 10.2172/6548367):
+    NACA 0012, Re = 3.6e5, FREE transition, compared against both the
+    fully turbulent and gamma-Re_thetat closures at the same Re.
+    Only this comparison yields headline MAE metrics.
+
+QUALITATIVE curve-shape checks (Reynolds-MISMATCHED, no headline MAE):
+  - Ladson (NASA TM 4074, 1988): Cl/Cd, Re=6e6, tripped  vs CFD Re=1e6
+  - Abbott & von Doenhoff (1959): Cl/Cd, Re=6e6, free transition
+  - Gregory & O'Reilly (R&M 3726, 1970): Cl/Cp, Re=2.88e6
+  - CFL3D SST reference (code-to-code verification), Re=6e6
+  These datasets sit at 3-6x the simulated Reynolds number; per-alpha
+  errors against them are reported for trend comparison only and the
+  drag bias is decomposed in the paper's drag-budget section.
 
 Secondary: key metrics for NACA 2412 / 4412 transcribed from
 Abbott & von Doenhoff, "Theory of Wing Sections" (1959), Re=6e6,
@@ -14,6 +22,7 @@ clearly labelled as approximate transcriptions.
 
 Writes:
   data/validation/validation_table.csv   per-alpha CFD vs experiment (0012)
+  data/validation/sandia_comparison.csv  Reynolds-matched primary table
   data/validation/cp_comparison_<alpha>.csv
   data/validation/metrics.json           MAE / stall / Cd_min summary
 """
@@ -254,6 +263,13 @@ def main():
                       f"Cd MAE (pre-stall) = {maes['cd_mae_prestall']:.4f}")
 
     metrics = {
+        "primary_validation": "low_re_sandia",
+        "reynolds_matched": {
+            "low_re_sandia": True,
+            "naca0012_ladson": False,
+            "cp_mae_gregory": False,
+            "cfl3d_sst_verification": False,
+        },
         "low_re_sandia": sandia_mae,
         "cp_mae_gregory": cp_mae,
         "naca0012_ladson": {
@@ -274,10 +290,10 @@ def main():
         "cfl3d_sst_verification": cfl3d_pts,
         "camber_airfoils": camber_rows,
         "notes": [
-            "CFD at Re=1e6, fully turbulent k-omega SST; Ladson data Re=6e6, tripped.",
-            "Fully turbulent CFD overpredicts drag vs tripped experiment; expected bias.",
-            "SAND80-2114 comparison at Re=3.6e5 free transition: gamma-Re_thetat closure expected closer than fully turbulent.",
-            "Gregory Cp data Re=2.88e6; TMR recommends it for surface-pressure validation.",
+            "PRIMARY validation: SAND80-2114 at Re=3.6e5 free transition (Reynolds-matched; only source of headline MAE).",
+            "Ladson (Re=6e6, tripped), Abbott (Re=6e6), Gregory (Re=2.88e6): 3-6x the simulated Re=1e6; per-alpha errors are QUALITATIVE trend checks only, not headline metrics.",
+            "Fully turbulent CFD drag bias vs tripped experiment decomposed in the drag-budget section: absent laminar run + Re gap.",
+            "Gregory Cp data Re=2.88e6; TMR recommends it for surface-pressure validation (trend use here).",
         ],
     }
     with open(os.path.join(VALID, "metrics.json"), "w") as f:

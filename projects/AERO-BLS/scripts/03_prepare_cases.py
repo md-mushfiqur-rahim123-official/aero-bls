@@ -68,7 +68,10 @@ def prepare(airfoil, alpha, re, case_dir, mesh_path, end_time=4000, template="ba
     for fname in ("U", "p", "k", "omega", "nut"):
         substitute(os.path.join(case_dir, "0", fname), mapping)
     substitute(os.path.join(case_dir, "constant", "transportProperties"), mapping)
-    substitute(os.path.join(case_dir, "system", "controlDict"), mapping)
+    for fname in ("controlDict", "controlDict.stage1", "controlDict.stage2"):
+        path = os.path.join(case_dir, "system", fname)
+        if os.path.exists(path):
+            substitute(path, mapping)
 
     os.makedirs(os.path.join(case_dir, "constant", "polyMesh"), exist_ok=True)
     with open(os.path.join(case_dir, "mesh_source.txt"), "w") as f:

@@ -1,8 +1,10 @@
 # AERO-BLS গবেষণা প্রতিবেদন (বাংলা)
 
-**বিষয়:** NACA এয়ারফয়েলে প্রান্তীয় স্তর (boundary layer) বিচ্ছেদ ও ড্র্যাগ হ্রাস — ২D RANS গাণিতিক সিমুলেশন
-**সরঞ্জাম:** OpenFOAM v2412 (simpleFoam, SIMPLEC), Gmsh, Python, Tectonic/LaTeX
-**মোট সিমুলেশন:** ১২১টি কনভার্জড কেস
+**বিষয়:** কম Reynolds সংখ্যায় NACA এয়ারফয়েলে প্রান্তীয় স্তরের ট্রানজিশন-সংবেদনশীল RANS মডেলিং — বিচ্ছেদ, স্টল ও ল্যামিনার সেপারেশন বাবল
+**সরঞ্জাম:** OpenFOAM v2412 (simpleFoam + pimpleFoam URANS), Gmsh, Python, Tectonic/LaTeX
+**মোট সিমুলেশন:** ১২৩টি কনভার্জড কেস (১২১ steady + ২ URANS verification)
+
+> **রিভিশন নোট:** কড়া রিভিউয়ারের ৭-দফা সমালোচনার (৪২/১০০) জবাবে গবেষণাটি রিফ্রেম করা হয়েছে — মূল ফোকাস এখন **কম-Re ট্রানজিশন ও ল্যামিনার সেপারেশন বাবল**, Reynolds-matched validation (Sandia SAND80-2114) এবং URANS verification subset। পয়েন্ট-বাই-পয়েন্ট জবাব: `docs/reviewer_response.md`। প্যাসিভ ডিভাইস (serration/tubercle) অংশ সরিয়ে **Appendix D "2D negative control"**-এ রাখা হয়েছে — এগুলো 3D spanwise ভর্টেক্স-নির্ভর, 2D মডেলে মূল্যায়ন অবৈধ।
 
 ---
 
@@ -22,7 +24,8 @@
   - গ্রিড স্বাধীনতা (coarse/medium/fine) + যাচাই পুনরাবৃত্তি — ৬ কেস
   - Serration (৩) + tubercle surrogate (৫) — ৮ কেস
   - **ট্রানজিশন পুনরাবৃত্তি:** γ–Re_θt মডেল, full factorial (৩ এয়ারফয়েল × α = 0–18° × Re = 10⁵/3×10⁵/10⁶) — ৪৫ কেস
-  - **কম-Re validation:** NACA 0012, Re = 3.6×10⁵, উভয় মডেল — ১০ কেস (Sandia SAND80-2114 বিপরীতে)
+  - **কম-Re validation:** NACA 0012, Re = 3.6×10⁵, উভয় মডেল — ১০ কেস (Sandia SAND80-2114 বিপরীতে) — **এটিই এখন প্রাথমিক (Reynolds-matched) validation**
+  - **URANS verification subset:** pimpleFoam, k–ω SST, ৫০-কর্ড ফারফিল্ড (৩৩,৭৪০ সেল), NACA 0012 α = 12°/15°, Re = 3.6×10⁵ — দুই-ধাপ ইন্টিগ্রেশন (dt = 10⁻⁵ spin-up, তারপর Co ≤ 20 প্রোডাকশন)
 - **যাচাই:** NASA TMR ডেটা (Ladson TM-4074, Gregory & O'Reilly R&M 3726, Abbott & von Doenhoff) + NASA CFL3D SST রেফারেন্স
 
 ## ৩. প্রধান ফলাফল
@@ -66,6 +69,12 @@
 - **স্টল (মূল সীমাবদ্ধতা):** পরীক্ষণে C_L,max = 0.981 (α = 10°), α = 12°-তে ধস (ল্যামিনার বাবল-বার্স্ট); কিন্তু **কোনো steady RANS closure-ই α = 15° পর্যন্ত attached থাকে** (C_L ≈ 1.06) — বাবল-বার্স্ট স্টল দুটোই মিস করে
 - **তাৎপর্য:** ল্যামিনার run উপস্থাপন প্রয়োজনীয় কিন্তু অপর্যাপ্ত — কম Re-তে মডেল করা স্টল-কোণ একটি **উপরের সীমা**; attached ড্র্যাগ ও লিফট তবে পরিমাণগতভাবে ব্যবহারযোগ্য
 
+### ছ) **URANS verification subset (pimpleFoam, α = 12°/15°, Re = 3.6×10⁵)**
+- steady simpleFoam যেখানে ব্যর্থ (স্টলের কাছে কনভার্জ হয় না), সেখানে URANS দিয়ে সময়-গড় লোড ও ওঠানামার পরিসর (std) নির্ণয়
+- দুই-ধাপ: dt = 10⁻⁵ spin-up (৫০০ ধাপ) → Co ≤ 20, Δt ≤ 6.8×10⁻⁵ প্রোডাকশন (t = 0.005 → 0.25 s ≈ 1.4 কনভেক্টিভ ইউনিট, forceCoeffs প্রতি 0.005-এ স্যাম্পল)
+- ফলাফল: `data/results/urans_summary.csv` ও পেপারের §URANS (fig15: C_L(t), C_D(t) হিস্ট্রি)
+- উদ্দেশ্য: স্টলের কাছে steady-RANS ও পরীক্ষার পার্থক্যের কতটুকু আনস্টেডি প্রকৃতির — পরিমাণগত অনুমান
+
 ### ঙ) প্যাসিভ ড্র্যাগ হ্রাস
 - 2D serrated TE: attached-এ ড্র্যাগ বাড়ে, গভীর বিচ্ছেদে −13.6% (base-pressure পুনরুদ্ধার)
 - 2D tubercle surrogate: সব কোণে শাস্তি (α = 10°-এ ড্র্যাগ +231%, লিফ্ট −51%) — উভয় ডিভাইসের প্রকৃত সুবিধা 3D spanwise ভর্টেক্স পদার্থবিজ্ঞানে
@@ -75,7 +84,8 @@
 1. **2D অনুমান:** প্রকৃত স্টল 3D; C_L,max অতিরঞ্জিত হতে পারে
 2. **Steady RANS:** পোস্ট-স্টল অস্থায়ী প্রবাহ (ভর্টেক্স shedding) ধরা যায়নি
 3. **ট্রানজিশন মডেল আংশিকভাবে যাচাইকৃত:** Re = 3.6×10⁵-এ free-transition ডেটার বিপরীতে attached ড্র্যাগ/লিফট যাচাই হয়েছে; তবে বাবল-বার্স্ট স্টল মেকানিজম unsteady সিমুলেশন ছাড়া ধরা যায় না
-4. **ডিভাইস surrogate 2D:** serration/tubercle-এর প্রকৃত প্রক্রিয়া spanwise
+4. **ডিভাইস surrogate 2D:** serration/tubercle-এর প্রকৃত প্রক্রিয়া spanwise — এখন negative control (Appendix D) হিসেবে উপস্থাপিত
+5. **URANS subset 2D:** আনস্টেডি যাচাই 2D-তেই; 3D স্টল প্রভাব (spanwise cells) এখনও বাইরে
 
 ## ৫. ডেলিভারেবল
 
@@ -84,7 +94,9 @@
 | `latex/main.pdf` | ২৫ পৃষ্ঠার পূর্ণ গবেষণা পত্র (১৬ চিত্র, সব টেবিল) |
 | `poster/poster.html` | A0 প্রিন্ট-রেডি পোস্টার (Plotly ইন্টার‍্যাক্টিভ) |
 | `data/results/summary.csv` | ১২১ কেসের সম্পূর্ণ ফলাফল |
-| `data/validation/` | CFD বনাম পরীক্ষণ তুলনা |
+| `data/validation/` | CFD বনাম পরীক্ষণ তুলনা (Sandia = primary) |
+| `data/results/urans_summary.csv` | URANS সময়-গড় ফলাফল ± std |
+| `docs/reviewer_response.md` | রিভিউয়ারের ৭-দফা সমালোচনার জবাব |
 | `openfoam_cases/` | সম্পূর্ণ পুনরুৎপাদনযোগ্য কেস |
 | `scripts/00–08` | সম্পূর্ণ অটোমেটেড পাইপলাইন |
 
@@ -100,6 +112,8 @@ python3 scripts/05_postprocess.py
 python3 scripts/06_generate_figures.py
 python3 scripts/07_validate_vs_experiment.py
 python3 scripts/08_build_report.py    # PDF + numbers.tex
+bash scripts/09_run_urans.sh          # URANS verification subset
+python3 scripts/10_postprocess_urans.py
 python3 poster/make_poster.py
 ```
 

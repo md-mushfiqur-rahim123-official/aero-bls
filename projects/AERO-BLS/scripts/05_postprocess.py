@@ -187,7 +187,7 @@ def main():
         with open(os.path.join(RESULTS, "convergence", name + ".csv"), "w") as f:
             f.write("time,Cd,Cl,Cm\n")
             for ti, ci, li, mi in zip(t, cd, cl, cm):
-                f.write("%.1f,%.6f,%.6f,%.6f\n" % (ti, ci, li, mi))
+                f.write("%.6g,%.6f,%.6f,%.6f\n" % (ti, ci, li, mi))
         summary.append({
             "case": name, "airfoil": info["airfoil"], "alpha_deg": info["alpha_deg"],
             "reynolds": info["reynolds"], "Cl": cl_m, "Cl_std": cl_s,
