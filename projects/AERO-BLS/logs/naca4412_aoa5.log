@@ -1,0 +1,5 @@
+=== Fri Nov 13 07:32:54 AM UTC 2026 : /workspace/projects/AERO-BLS/openfoam_cases/naca4412_aoa5 ===
+    Mesh non-orthogonality Max: 85.63245 average: 42.55521
+    Max skewness = 3.260028 OK.
+Mesh OK.
+=== Fri Nov 13 07:36:15 AM UTC 2026 : finished rc=0 ===

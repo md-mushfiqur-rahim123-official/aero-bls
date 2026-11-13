@@ -1,0 +1,76 @@
+{
+  "cp_mae_gregory": {
+    "0": 0.019247415472054576,
+    "10": 0.11909719852465889,
+    "15": 0.6875728784724939
+  },
+  "naca0012_ladson": {
+    "cl_mae_pre_stall": 0.037921829421346344,
+    "cl_mae_pre_stall_pct": 5.107377748401505,
+    "cd_mae_pre_stall_pct": 100.70470278287276,
+    "cl_mae_abbott": 0.0580782566849569,
+    "cl_mae_gregory": 0.05475635926064762,
+    "cd_mae_ladson_abs": 0.009894780155659713,
+    "alpha_stall_CFD_deg": 18.0,
+    "alpha_stall_Ladson_deg": 17.13,
+    "cl_max_CFD": 1.017480391975,
+    "cl_max_Ladson": 1.6116
+  },
+  "cfl3d_sst_verification": [
+    {
+      "alpha": 0.0,
+      "cl_diff_abs": 0.0061979722039866006,
+      "cl_diff_pct": NaN,
+      "cd_diff_pct": 75.6023334339023
+    },
+    {
+      "alpha": 10.0,
+      "cl_diff_abs": -0.11153476165000009,
+      "cl_diff_pct": -10.348295364897554,
+      "cd_diff_pct": 117.62740063653004
+    },
+    {
+      "alpha": 15.0,
+      "cl_diff_abs": -0.515278514075,
+      "cl_diff_pct": -34.197176138627384,
+      "cd_diff_pct": 318.08138059793174
+    }
+  ],
+  "camber_airfoils": [
+    {
+      "airfoil": "naca0012",
+      "Cl0_CFD": 0.0061903446231875,
+      "Cl0_Abbott_transcribed": 0.0061903446231875,
+      "alpha0_Abbott_transcribed": 0.0,
+      "Clmax_CFD": 1.017480391975,
+      "Clmax_Abbott_transcribed": 1.5,
+      "alpha_stall_CFD": 18.0,
+      "alpha_stall_Abbott_transcribed": 16.0
+    },
+    {
+      "airfoil": "naca2412",
+      "Cl0_CFD": 0.20481254271250002,
+      "Cl0_Abbott_transcribed": 0.4349725427125,
+      "alpha0_Abbott_transcribed": -2.1,
+      "Clmax_CFD": 1.3512626535,
+      "Clmax_Abbott_transcribed": 1.6,
+      "alpha_stall_CFD": 18.0,
+      "alpha_stall_Abbott_transcribed": 16.0
+    },
+    {
+      "airfoil": "naca4412",
+      "Cl0_CFD": 0.3980311633875,
+      "Cl0_Abbott_transcribed": 0.8473911633875,
+      "alpha0_Abbott_transcribed": -4.1,
+      "Clmax_CFD": 1.475708142125,
+      "Clmax_Abbott_transcribed": 1.67,
+      "alpha_stall_CFD": 15.0,
+      "alpha_stall_Abbott_transcribed": 16.0
+    }
+  ],
+  "notes": [
+    "CFD at Re=1e6, fully turbulent k-omega SST; Ladson data Re=6e6, tripped.",
+    "Fully turbulent CFD overpredicts drag vs tripped experiment; expected bias.",
+    "Gregory Cp data Re=2.88e6; TMR recommends it for surface-pressure validation."
+  ]
+}

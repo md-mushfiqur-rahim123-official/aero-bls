@@ -1,0 +1,12 @@
+{
+  "airfoil": "naca0012.dat",
+  "density": "fine",
+  "n_theta": 320,
+  "n_layers": 160,
+  "cells": 51360,
+  "first_cell_height": 3.535602721418412e-06,
+  "growth": 1.085,
+  "farfield_radius": 20.0,
+  "serration": false,
+  "tubercle": false
+}
