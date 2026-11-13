@@ -310,6 +310,55 @@ def main():
             m[f"TrClPct{aname}{tag}"] = f"{dcl:.1f}" if dcl is not None else "n/a"
             m[f"TrCdPct{aname}{tag}"] = f"{dcd:.1f}" if dcd is not None else "n/a"
 
+    def sandia_mae(model, key):
+        mpath = os.path.join(ROOT, "data", "validation", "metrics.json")
+        if os.path.exists(mpath):
+            met = json.load(open(mpath))
+            v = met.get("low_re_sandia", {}).get(model, {}).get(key)
+            return float(v) if v is not None else None
+        return None
+
+    ft_cl = sandia_mae("FT", "cl_mae_prestall")
+    tr_cl = sandia_mae("TR", "cl_mae_prestall")
+    ft_cd = sandia_mae("FT", "cd_mae_prestall")
+    tr_cd = sandia_mae("TR", "cd_mae_prestall")
+    m["SandiaClMaeFT"] = f"{ft_cl:.4f}" if ft_cl is not None else "n/a"
+    m["SandiaClMaeTR"] = f"{tr_cl:.4f}" if tr_cl is not None else "n/a"
+    m["SandiaCdMaeFT"] = f"{ft_cd:.4f}" if ft_cd is not None else "n/a"
+    m["SandiaCdMaeTR"] = f"{tr_cd:.4f}" if tr_cd is not None else "n/a"
+    if ft_cd and tr_cd:
+        m["SandiaCdErrDropPct"] = f"{100 * (ft_cd - tr_cd) / ft_cd:.0f}"
+    else:
+        m["SandiaCdErrDropPct"] = "n/a"
+
+    def get_at(af, alpha, re, key, tr=False):
+        for r in summary:
+            if (r["airfoil"] == af + ("tr" if tr else "")
+                    and abs(float(r["alpha_deg"]) - alpha) < 0.01
+                    and float(r["reynolds"]) == re
+                    and all(s not in r["case"] for s in
+                            ("serr", "coarse", "fine", "farfield", "long", "tub"))):
+                v = r.get(key, "")
+                return float(v) if v and v not in ("None", "") else None
+        return None
+
+    m["SandiaClTenExp"] = "0.981"
+    m["SandiaClTwelveExp"] = "0.483"
+    cl12_ft = get_at("naca0012", 12, 3.6e5, "Cl")
+    m["SandiaClTwelveCFD"] = f"{cl12_ft:.2f}" if cl12_ft is not None else "n/a"
+    m["SandiaCdFifteenExp"] = "0.190"
+    cd15_ft = get_at("naca0012", 15, 3.6e5, "Cd")
+    m["SandiaCdFifteenCFD"] = f"{cd15_ft:.3f}" if cd15_ft is not None else "n/a"
+
+    cl_ft0 = get_at("naca4412", 0, 3e5, "Cl")
+    cl_tr0 = get_at("naca4412", 0, 3e5, "Cl", tr=True)
+    cd_ft0 = get_at("naca4412", 0, 3e5, "Cd")
+    cd_tr0 = get_at("naca4412", 0, 3e5, "Cd", tr=True)
+    if cl_ft0 and cl_tr0:
+        m["TrClPctZeroFourFourOneTwoReThr"] = f"{100 * (cl_tr0 - cl_ft0) / abs(cl_ft0):.1f}"
+    if cd_ft0 and cd_tr0:
+        m["TrCdDropZeroFourFourOneTwoReThr"] = f"{100 * (cd_tr0 - cd_ft0) / cd_ft0:.1f}"
+
     allforce_rows = []
     for af in ("naca0012", "naca2412", "naca4412"):
         for r in core:

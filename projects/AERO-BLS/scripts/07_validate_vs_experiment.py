@@ -216,7 +216,45 @@ def main():
         cp_mae[a] = float(mae)
         print(f"[cp] aoa{a}: upper-surface Cp MAE vs Gregory = {mae:.4f}")
 
+    # ---------------- low-Re validation: Sheldahl & Klimas SAND80-2114 -----
+    # NACA 0012, Re = 3.6e5, free transition; compared against both the
+    # fully turbulent and gamma-Re_thetat closures at matched Re.
+    sandia_path = os.path.join(EXP, "sheldahl1981_naca0012_re360k.dat")
+    sandia_rows = []
+    sandia_mae = {}
+    if os.path.exists(sandia_path):
+        exp = [(float(l.split()[0]), float(l.split()[1]), float(l.split()[2]))
+               for l in open(sandia_path) if not l.startswith("#")]
+        for model, af in (("FT", "naca0012"), ("TR", "naca0012tr")):
+            pts = []
+            for ea, ecl, ecd in exp:
+                r = next((r for r in summary if r["airfoil"] == af
+                          and abs(float(r["alpha_deg"]) - ea) < 0.01
+                          and float(r["reynolds"]) == 3.6e5), None)
+                if r:
+                    pts.append({"alpha": ea, "Cl_exp": ecl, "Cd_exp": ecd,
+                                "Cl_CFD": float(r["Cl"]), "Cd_CFD": float(r["Cd"])})
+            if pts:
+                pre = [p for p in pts if p["alpha"] <= 10.0]
+                cl_mae = float(np.mean([abs(p["Cl_CFD"] - p["Cl_exp"]) for p in pre]))
+                cd_mae = float(np.mean([abs(p["Cd_CFD"] - p["Cd_exp"]) for p in pre]))
+                cl_mae_stall = float(np.mean([abs(p["Cl_CFD"] - p["Cl_exp"]) for p in pts]))
+                sandia_mae[model] = {"cl_mae_prestall": cl_mae,
+                                     "cd_mae_prestall": cd_mae,
+                                     "cl_mae_all": cl_mae_stall}
+                for p in pts:
+                    sandia_rows.append({"model": model, **p})
+        if sandia_rows:
+            with open(os.path.join(VALID, "sandia_comparison.csv"), "w", newline="") as f:
+                w = csv.DictWriter(f, fieldnames=list(sandia_rows[0].keys()))
+                w.writeheader()
+                w.writerows(sandia_rows)
+            for model, maes in sandia_mae.items():
+                print(f"[sandia] {model}: Cl MAE (pre-stall) = {maes['cl_mae_prestall']:.4f}, "
+                      f"Cd MAE (pre-stall) = {maes['cd_mae_prestall']:.4f}")
+
     metrics = {
+        "low_re_sandia": sandia_mae,
         "cp_mae_gregory": cp_mae,
         "naca0012_ladson": {
             "cl_mae_pre_stall": cl_mae,
@@ -238,6 +276,7 @@ def main():
         "notes": [
             "CFD at Re=1e6, fully turbulent k-omega SST; Ladson data Re=6e6, tripped.",
             "Fully turbulent CFD overpredicts drag vs tripped experiment; expected bias.",
+            "SAND80-2114 comparison at Re=3.6e5 free transition: gamma-Re_thetat closure expected closer than fully turbulent.",
             "Gregory Cp data Re=2.88e6; TMR recommends it for surface-pressure validation.",
         ],
     }

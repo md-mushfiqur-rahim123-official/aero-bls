@@ -1,11 +1,23 @@
 {
+  "low_re_sandia": {
+    "FT": {
+      "cl_mae_prestall": 0.029037234297295832,
+      "cd_mae_prestall": 0.01023697600375,
+      "cl_mae_all": 0.2925966510533775
+    },
+    "TR": {
+      "cl_mae_prestall": 0.04042051592555366,
+      "cd_mae_prestall": 0.006847830369583333,
+      "cl_mae_all": 0.2808363048053322
+    }
+  },
   "cp_mae_gregory": {
     "0": 0.019247415472054576,
     "10": 0.11909719852465889,
     "15": 0.6875728784724939
   },
   "naca0012_ladson": {
-    "cl_mae_pre_stall": 0.07780657393438094,
+    "cl_mae_pre_stall": 0.04042051592555366,
     "cl_mae_pre_stall_pct": 8.673285968544755,
     "cl_mae_attached": 0.037921829421346344,
     "cl_mae_attached_pct": 5.107377748401505,
@@ -73,6 +85,7 @@
   "notes": [
     "CFD at Re=1e6, fully turbulent k-omega SST; Ladson data Re=6e6, tripped.",
     "Fully turbulent CFD overpredicts drag vs tripped experiment; expected bias.",
+    "SAND80-2114 comparison at Re=3.6e5 free transition: gamma-Re_thetat closure expected closer than fully turbulent.",
     "Gregory Cp data Re=2.88e6; TMR recommends it for surface-pressure validation."
   ]
 }

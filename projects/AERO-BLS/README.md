@@ -10,9 +10,11 @@ stall, and passive drag reduction on the NACA 0012, 2412, and 4412 sections.
   + grid independence (coarse/medium/fine) + farfield/convergence verification
   + trailing-edge serration and leading-edge tubercle (2D surrogate) cases
   + transition-sensitive repeats with the γ–Re_θt (Langtry–Menter) closure:
-    NACA 0012 × α = 0–18° × Re = 10⁵/3×10⁵/10⁶ and NACA 2412/4412 × α = 0–18° at Re = 10⁵,
+    NACA 0012/2412/4412 × α = 0–18° × Re = 10⁵/3×10⁵/10⁶ (full factorial, 45 cases),
     warm-started from the converged fully turbulent siblings
-  — **91 cases total**
+  + low-Reynolds free-transition validation at Re = 3.6×10⁵ vs Sandia SAND80-2114
+    (Sheldahl & Klimas): NACA 0012 fully turbulent + γ–Re_θt, α = 0–15° (10 cases)
+  — **121 cases total**
 - **Validation:** NASA Turbulence Modeling Resource NACA 0012 datasets
   (Ladson TM-4074 tripped forces, Gregory & O'Reilly R&M 3726, Abbott & von Doenhoff)
   and NASA CFL3D SST reference results
@@ -23,7 +25,7 @@ stall, and passive drag reduction on the NACA 0012, 2412, and 4412 sections.
 projects/AERO-BLS/
 ├── airfoils/            # analytic NACA 4-digit coordinates (638 pts)
 ├── mesh/                # generated Gmsh v2.2 hex meshes + metadata
-├── openfoam_cases/      # base_case templates + 91 staged cases
+├── openfoam_cases/      # base_case templates + 121 staged cases
 ├── scripts/             # 00–08 pipeline (see below)
 ├── data/
 │   ├── experimental/    # NASA TMR .dat reference files
@@ -45,8 +47,8 @@ projects/AERO-BLS/
 | `03_prepare_cases.py` | Stage `base_case`, substitute BC tokens per case |
 | `04_run_all_cases.sh` | Batch runner over `run_manifest.txt` (NPAR parallel) |
 | `05_postprocess.py` | Forces (tail-averaged), Cp, Cf, separation, residuals → `data/results/` |
-| `06_generate_figures.py` | 9 publication figures → `latex/figures/` |
-| `07_validate_vs_experiment.py` | CFD vs Ladson/Gregory/Abbott + CFL3D SST → `data/validation/` |
+| `06_generate_figures.py` | 16 publication figures → `latex/figures/` |
+| `07_validate_vs_experiment.py` | CFD vs Ladson/Gregory/Abbott + CFL3D SST + Sandia SAND80-2114 → `data/validation/` |
 | `08_build_report.py` | `numbers.tex` macros + appendix figure + tectonic compile |
 
 ## Reproducing from scratch

@@ -468,6 +468,42 @@ def fig13_transition(summary):
     plt.close(fig)
 
 
+def fig14_sandia_validation(summary):
+    """Low-Re validation vs Sheldahl & Klimas SAND80-2114 (NACA 0012, Re=3.6e5)."""
+    exp_path = os.path.join(ROOT, "data", "experimental",
+                            "sheldahl1981_naca0012_re360k.dat")
+    if not os.path.exists(exp_path):
+        return
+    exp = np.array([(float(l.split()[0]), float(l.split()[1]), float(l.split()[2]))
+                    for l in open(exp_path) if not l.startswith("#")])
+    keep = ("serr", "coarse", "fine", "farfield", "long", "tub")
+    fig, axes = plt.subplots(1, 2, figsize=(9.8, 4.2))
+    for suffix, lab, style in (("", "Fully turbulent", "o-"),
+                               ("tr", r"$\gamma$-$Re_{\theta t}$", "s--")):
+        rows = [r for r in summary if r["airfoil"] == "naca0012" + suffix
+                and float(r["reynolds"]) == 3.6e5
+                and all(s not in r["case"] for s in keep)]
+        if not rows:
+            continue
+        rows = sorted(rows, key=lambda r: float(r["alpha_deg"]))
+        a = [float(r["alpha_deg"]) for r in rows]
+        axes[0].plot(a, [float(r["Cl"]) for r in rows], style, ms=4, label=lab)
+        axes[1].plot(a, [float(r["Cd"]) for r in rows], style, ms=4, label=lab)
+    axes[0].plot(exp[:, 0], exp[:, 1], "^", color="k", ms=5, label="Sandia exp.")
+    axes[1].plot(exp[:, 0], exp[:, 2], "^", color="k", ms=5, label="Sandia exp.")
+    axes[0].set_xlabel(r"$\alpha$ [deg]")
+    axes[0].set_ylabel(r"$C_L$")
+    axes[0].set_title(r"Lift, NACA 0012 at $Re = 3.6\times10^5$")
+    axes[0].legend(fontsize=8)
+    axes[1].set_yscale("log")
+    axes[1].set_xlabel(r"$\alpha$ [deg]")
+    axes[1].set_ylabel(r"$C_D$")
+    axes[1].set_title("Drag")
+    axes[1].legend(fontsize=8)
+    fig.savefig(os.path.join(FIGS, "fig14_sandia_validation.png"))
+    plt.close(fig)
+
+
 def main():
     os.makedirs(FIGS, exist_ok=True)
     summary = load_summary()
@@ -485,6 +521,7 @@ def main():
     fig11_re_sweep(summary)
     fig12_tubercle(summary)
     fig13_transition(summary)
+    fig14_sandia_validation(summary)
     made = sorted(os.path.basename(p) for p in glob.glob(os.path.join(FIGS, "*.png")))
     print("[done] figures:", ", ".join(made))
 
