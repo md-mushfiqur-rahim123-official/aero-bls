@@ -35,10 +35,22 @@ def load_summary():
         return list(csv.DictReader(f))
 
 
+EXCLUDE_SUBSTRINGS = ("serr", "coarse", "fine", "farfield", "long",
+                      "_re1e5", "_re3e5", "tub")
+
+
 def core_cases(summary, airfoil, reynolds=1e6):
     rows = [r for r in summary
             if r["airfoil"] == airfoil and float(r["reynolds"]) == reynolds
-            and "serr" not in r["case"] and "coarse" not in r["case"] and "fine" not in r["case"]]
+            and all(s not in r["case"] for s in EXCLUDE_SUBSTRINGS)]
+    return sorted(rows, key=lambda r: float(r["alpha_deg"]))
+
+
+def variant_cases(summary, airfoil, reynolds=1e6):
+    """Cases for one device variant (baseline/serrated/tubercle) at one Re."""
+    rows = [r for r in summary
+            if r["airfoil"] == airfoil and float(r["reynolds"]) == reynolds
+            and all(s not in r["case"] for s in ("coarse", "fine", "farfield", "long"))]
     return sorted(rows, key=lambda r: float(r["alpha_deg"]))
 
 
@@ -367,6 +379,64 @@ def fig9_validation():
     plt.close(fig)
 
 
+def fig11_re_sweep(summary):
+    """Lift and drag curves at three Reynolds numbers, one column per airfoil."""
+    fig, axes = plt.subplots(2, 3, figsize=(10.8, 6.2), sharex=True)
+    re_list = [(1e5, r"10^5"), (3e5, r"3\times10^5"), (1e6, r"10^6")]
+    for col, af in enumerate(AIRFOILS):
+        for row, (key, ylab) in enumerate((("Cl", r"$C_L$"), ("Cd", r"$C_D$"))):
+            ax = axes[row, col]
+            for re, lab in re_list:
+                rows = [r for r in summary
+                        if r["airfoil"] == af and float(r["reynolds"]) == re
+                        and all(s not in r["case"] for s in
+                                ("serr", "coarse", "fine", "farfield", "long", "tub"))]
+                if not rows:
+                    continue
+                a, v = series(sorted(rows, key=lambda r: float(r["alpha_deg"])), key)
+                ax.plot(a, v, "o-", ms=3.5, label=rf"$Re={lab}$")
+            ax.set_title(af.upper(), fontsize=10)
+            if row == 1:
+                ax.set_xlabel(r"$\alpha$ [deg]")
+            if col == 0:
+                ax.set_ylabel(ylab)
+            if key == "Cd":
+                ax.set_yscale("log")
+            if row == 0 and col == 2:
+                ax.legend(fontsize=8)
+    fig.suptitle(r"Reynolds-number sensitivity, 2D RANS k-$\omega$ SST")
+    fig.savefig(os.path.join(FIGS, "fig11_re_sweep.png"))
+    plt.close(fig)
+
+
+def fig12_tubercle(summary):
+    """Passive-device comparison: baseline vs serrated TE vs tubercle LE surrogate."""
+    devices = [("naca0012", "Baseline"),
+               ("naca0012s", "Serrated TE"),
+               ("naca0012t", "Tubercle LE (2D surrogate)")]
+    fig, axes = plt.subplots(1, 2, figsize=(9.8, 4.2))
+    for af, lab in devices:
+        rows = variant_cases(summary, af)
+        if not rows:
+            continue
+        a, cl = series(rows, "Cl")
+        _, cd = series(rows, "Cd")
+        axes[0].plot(a, cl, "o-", ms=3.5, label=lab)
+        axes[1].plot(a, cd, "o-", ms=3.5, label=lab)
+    axes[0].axhline(0, color="k", lw=0.5)
+    axes[0].set_xlabel(r"$\alpha$ [deg]")
+    axes[0].set_ylabel(r"$C_L$")
+    axes[0].set_title(r"Lift curve, $Re=10^6$")
+    axes[0].legend(fontsize=8)
+    axes[1].set_yscale("log")
+    axes[1].set_xlabel(r"$\alpha$ [deg]")
+    axes[1].set_ylabel(r"$C_D$")
+    axes[1].set_title(r"Drag polar rise, $Re=10^6$")
+    axes[1].legend(fontsize=8)
+    fig.savefig(os.path.join(FIGS, "fig12_tubercle.png"))
+    plt.close(fig)
+
+
 def main():
     os.makedirs(FIGS, exist_ok=True)
     summary = load_summary()
@@ -381,6 +451,8 @@ def main():
     fig8_cf(summary)
     fig9_validation()
     fig10_cp_validation()
+    fig11_re_sweep(summary)
+    fig12_tubercle(summary)
     made = sorted(os.path.basename(p) for p in glob.glob(os.path.join(FIGS, "*.png")))
     print("[done] figures:", ", ".join(made))
 

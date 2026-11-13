@@ -32,11 +32,11 @@ run_case() {
         echo "=== $(date) : $case_dir ==="
         if [ ! -d "$case_dir/constant/polyMesh" ] || [ ! -f "$case_dir/constant/polyMesh/points" ]; then
             gmshToFoam "$(cat "$case_dir/mesh_source.txt")" \
-                -case "$case_dir" > /dev/null 2>&1 || { echo "gmshToFoam FAILED"; exit 1; }
+                -case "$case_dir" < /dev/null > /dev/null 2>&1 || { echo "gmshToFoam FAILED"; exit 1; }
             fix_empty_patches "$case_dir"
         fi
-        checkMesh -case "$case_dir" 2>&1 | grep -E "Mesh OK|non-orthogonality|skewness|Failed" || true
-        simpleFoam -case "$case_dir" > /dev/null 2>&1
+        checkMesh -case "$case_dir" < /dev/null 2>&1 | grep -E "Mesh OK|non-orthogonality|skewness|Failed" || true
+        simpleFoam -case "$case_dir" < /dev/null > /dev/null 2>&1
         local rc=$?
         echo "=== $(date) : finished rc=$rc ==="
     } > "$log" 2>&1

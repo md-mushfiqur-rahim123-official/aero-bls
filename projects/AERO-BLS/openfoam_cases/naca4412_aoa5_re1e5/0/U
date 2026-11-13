@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*\\
+\| =========                 |                                                 |
+\| \\      /  F ield         | OpenFOAM                                        |
+\|  \\    /   O peration     | Version:  v2412                                 |
+\|   \\  /    A nd           |                                                 |
+\|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (1.49429205 0.13073361 0);
+
+boundaryField
+{
+    airfoil
+    {
+        type            noSlip;
+    }
+    farfield
+    {
+        type            freestreamVelocity;
+        freestreamValue uniform (1.49429205 0.13073361 0);
+    }
+    front
+    {
+        type            empty;
+    }
+    back
+    {
+        type            empty;
+    }
+}
+
+// ************************************************************************* //

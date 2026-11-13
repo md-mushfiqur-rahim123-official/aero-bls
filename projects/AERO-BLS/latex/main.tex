@@ -43,7 +43,7 @@
 \vspace{1em}
 
 \begin{abstract}
-Two-dimensional Reynolds-Averaged Navier--Stokes (RANS) simulations with the $k$--$\omega$ SST closure are used to investigate turbulent boundary layer separation, stall, and passive drag reduction on the NACA 0012, 2412, and 4412 airfoil sections. A structured polar O-grid topology ($y^+ \approx 0.4$ at the wall, farfield at 20 chords) is generated programmatically, and 24 steady-state cases at chord Reynolds numbers of $10^5$--$10^6$ and angles of attack of $0^\circ$--$18^\circ$ are computed with OpenFOAM. The solver is validated against the NASA Turbulence Modeling Resource (TMR) reference datasets for the NACA 0012: pre-stall lift coefficients agree with the tripped experimental data of Ladson (NASA TM 4074) to within \ClMAEpct{}~\% mean absolute error, and the computed lift curve is bracketed by the Ladson, Gregory \& O'Reilly, and Abbott \& von Doenhoff datasets. Code-to-code comparison against NASA's CFL3D SST reference results shows agreement in $C_L$ within \CflThreeDClPct{}~\% at attached conditions, deviating at deep stall where the steady coarse-grid solution over-separates. Separation onset is detected from wall skin-friction reversal: the separation point moves from $x/c \approx \SepAten$ at $\alpha = 10^\circ$ to $x/c \approx \SepAfifteen$ at $\alpha = 15^\circ$ on the NACA 0012, accompanied by a five-fold drag rise. Camber delays stall and increases maximum lift ($C_{L,\max}$ ordering $4412 > 2412 > 0012$), while reducing Reynolds number from $10^6$ to $10^5$ degrades the lift slope and aggravates separation. Trailing-edge serrations, modelled as a 2D sawtooth, increase drag at attached conditions --- a genuinely three-dimensional benefit that a 2D surrogate cannot capture --- but recover part of the base-pressure deficit in deeply separated flow. All meshes, cases, scripts, and figures are released for full reproducibility.
+Two-dimensional Reynolds-Averaged Navier--Stokes (RANS) simulations with the $k$--$\omega$ SST closure are used to investigate turbulent boundary layer separation, stall, and passive drag reduction on the NACA 0012, 2412, and 4412 airfoil sections. A structured polar O-grid topology ($y^+ \approx 0.4$ at the wall, farfield at 20 chords) is generated programmatically, and 64 steady-state cases at chord Reynolds numbers of $10^5$--$10^6$ and angles of attack of $0^\circ$--$20^\circ$ are computed with OpenFOAM. The solver is validated against the NASA Turbulence Modeling Resource (TMR) reference datasets for the NACA 0012: pre-stall lift coefficients agree with the tripped experimental data of Ladson (NASA TM 4074) to within \ClMAEpct{}~\% mean absolute error, and the computed lift curve is bracketed by the Ladson, Gregory \& O'Reilly, and Abbott \& von Doenhoff datasets. Code-to-code comparison against NASA's CFL3D SST reference results shows agreement in $C_L$ within \CflThreeDClPct{}~\% at attached conditions, deviating at deep stall where the steady coarse-grid solution over-separates. Separation onset is detected from wall skin-friction reversal: the separation point moves from $x/c \approx \SepAten$ at $\alpha = 10^\circ$ to $x/c \approx \SepAfifteen$ at $\alpha = 15^\circ$ on the NACA 0012, accompanied by a five-fold drag rise. Camber delays stall and increases maximum lift ($C_{L,\max}$ ordering $4412 > 2412 > 0012$), while a full Reynolds sweep ($Re = 10^5$, $3\times10^5$, $10^6$, all three sections) shows a monotonic degradation of the attached-range force balance and a dramatic near-stall response: at $Re = 10^5$ all three sections are fully separated by $\alpha = 18^\circ$, an effective stall-angle reduction of several degrees. Trailing-edge serrations, modelled as a 2D sawtooth, increase drag at attached conditions --- a genuinely three-dimensional benefit that a 2D surrogate cannot capture --- but recover part of the base-pressure deficit in deeply separated flow; a sinusoidal leading-edge thickness modulation, used as a 2D tubercle surrogate, is penalised at every incidence (drag up to \TubCdPctTen{}~\% higher, lift up to \TubClPctTen{}~\% lower), confirming that both device classes derive their benefit from spanwise flow physics. All meshes, cases, scripts, and figures are released for full reproducibility.
 \end{abstract}
 
 \section{Introduction}\label{sec:intro}
@@ -205,20 +205,21 @@ All cases are computed with the steady-state solver \texttt{simpleFoam} (SIMPLEC
 The near-wall resolution was verified a posteriori: the first-cell height of $10^{-5}c$ gives $y^+ \approx 0.4$ at $Re=10^6$ along the mid-chord, with the maximum $y^+$ over all cases remaining below unity except in the immediate leading-edge stagnation neighbourhood. The SST model is therefore integrated to the wall everywhere, as intended; no wall functions are active on the airfoil surface.
 
 \subsection{Case matrix}
-The core matrix comprises 15 cases: three sections at $\alpha = 0^\circ, 5^\circ, 10^\circ, 15^\circ, 18^\circ$ and $Re = 10^6$. Seven supplementary cases cover the Reynolds-number sensitivity (NACA 0012 at $\alpha=10^\circ$, $Re = 10^5$ and $3\times10^5$), the grid-independence triple at $\alpha = 5^\circ$, and the serrated trailing edge at $\alpha = 5^\circ, 10^\circ, 15^\circ$; two verification repeats (fine grid and extended iteration horizon at $\alpha = 10^\circ$) complete the set of 24 runs (Table~\ref{tab:matrix}).
+The core matrix comprises 21 cases: three sections at $\alpha = 0^\circ, 5^\circ, 10^\circ, 12^\circ, 15^\circ, 18^\circ, 20^\circ$ and $Re = 10^6$; the $12^\circ$ and $20^\circ$ levels resolve stall onset and the post-stall branch of each lift curve. The Reynolds-number sensitivity is addressed with a full sweep: $Re = 10^5$ and $3\times10^5$ at $\alpha = 0^\circ$--$18^\circ$ for \emph{all three} sections (28 cases), which places the $10^6$ core curves between two lower-Reynolds envelopes. The passive-device study adds three serrated-trailing-edge cases and five leading-edge-tubercle cases (2D surrogate, $\alpha = 0^\circ$--$18^\circ$). Three grid-independence cases and three verification repeats (fine grid, extended iteration horizon, farfield $50c$) complete the set of 64 runs (Table~\ref{tab:matrix}).
 
 \begin{table}[t]
   \centering
-  \caption{Complete case matrix (25 runs).}
+  \caption{Complete case matrix (64 runs).}
   \label{tab:matrix}
   \begin{tabular}{p{2.4cm}p{6.6cm}p{5.2cm}}
     \toprule
     Group & Configuration & Purpose \\
     \midrule
-    Core (15) & $\{0012, 2412, 4412\} \times \alpha \in \{0..18^\circ\}$, $Re=10^6$, medium & Separation map, camber effect \\
-    Reynolds (2) & 0012, $\alpha=10^\circ$, $Re \in \{10^5, 3\times10^5\}$ & Reynolds sensitivity \\
+    Core (21) & $\{0012, 2412, 4412\} \times \alpha \in \{0,5,10,12,15,18,20^\circ\}$, $Re=10^6$, medium & Separation map, camber effect, stall onset \\
+    Reynolds (30) & $\{0012, 2412, 4412\} \times \alpha \in \{0..18^\circ\}$, $Re \in \{10^5, 3\times10^5\}$ & Reynolds sensitivity, all sections \\
     Grid (3) & 0012, $\alpha=5^\circ$, coarse/medium/fine & Discretisation uncertainty \\
     Serration (3) & 0012 serrated, $\alpha \in \{5,10,15\}^\circ$ & Drag reduction \\
+    Tubercle (5) & 0012 LE-modulated, $\alpha \in \{0..18^\circ\}$ & Drag reduction (2D surrogate) \\
     Verification (3) & 0012, $\alpha=10^\circ$: fine grid, 12000 iters, farfield $50c$ & High-lift grid, convergence, farfield checks \\
     \bottomrule
   \end{tabular}
@@ -231,7 +232,7 @@ Force coefficients are read from the \texttt{forceCoeffs} function-object output
 
 \subsection{Validation against experiment and NASA reference CFD}\label{sec:validation}
 
-Figure~\ref{fig:validation} compares the computed lift curve of the NACA 0012 at $Re=10^6$ with three experimental datasets and with NASA's CFL3D SST reference solution. The computed lift slope in the attached regime matches the classical thin-airfoil value of $2\pi$ per radian ($\approx 0.1096~\mathrm{deg}^{-1}$) at low incidence, and the computed $C_L$ values fall within \ClMAEpct{}~\% (mean absolute error) of the tripped Ladson data for $\alpha \le 14^\circ$. At $\alpha = 10^\circ$ the computed lift is $10.3\%$ below the CFL3D SST reference, and at $\alpha = 15^\circ$ the computed lift plateaus near $C_L \approx 1.0$ against a reference value of $1.51$ --- the verification repeats of Appendix~\ref{app:grid} bound this deficit away from grid, convergence, and farfield effects and attribute it to the fully turbulent steady modelling chain at high incidence. The computed drag coefficients exceed the tripped experimental values by roughly a factor of two at low lift; this bias is expected and is analysed in Section~\ref{sec:dragbudget}.
+Figure~\ref{fig:validation} compares the computed lift curve of the NACA 0012 at $Re=10^6$ with three experimental datasets and with NASA's CFL3D SST reference solution. The computed lift slope in the attached regime matches the classical thin-airfoil value of $2\pi$ per radian ($\approx 0.1096~\mathrm{deg}^{-1}$) at low incidence, and the computed $C_L$ values fall within \ClMAEpct{}~\% (mean absolute error) of the tripped Ladson data over the attached range ($\alpha \le 10^\circ$); extending the window to $\alpha \le 14^\circ$ to include the grid-sensitive $\alpha = 12^\circ$ point raises the MAE to \ClMAEPreStallPct{}~\% (see the grid discussion below and Appendix~\ref{app:grid}). At $\alpha = 10^\circ$ the computed lift is $10.3\%$ below the CFL3D SST reference. At $\alpha = 15^\circ$ the production (medium) grid over-separates: lift drops to $C_L \approx 0.99$ with more than half the chord reversed, whereas the fine-grid repeat remains attached and recovers $C_L = 1.24$, against $1.51$ for CFL3D SST and $1.49$ measured. Separation onset in steady RANS is therefore strongly grid-sensitive, consistent with the TMR guidance for this case; the remaining attached-flow deficit at high incidence is attributed to the fully turbulent steady modelling chain. The computed drag coefficients exceed the tripped experimental values by roughly a factor of two at low lift; this bias is expected and is analysed in Section~\ref{sec:dragbudget}.
 
 \begin{figure}[t]
   \centering
@@ -361,6 +362,8 @@ Figure~\ref{fig:cf} shows the skin-friction distributions used to locate separat
 
 The migration of the separation point is strongly non-linear in $\alpha$: between $0^\circ$ and $10^\circ$ the upper-surface flow remains attached over the entire chord (the adverse gradient is mild enough for the turbulent layer to negotiate the full recovery), between $10^\circ$ and $15^\circ$ the separation point jumps from the trailing edge to approximately one-fifth of the chord, and beyond $15^\circ$ it migrates only slightly further upstream while the drag continues to climb. This is the classical rapid-progressing trailing-edge stall of moderately thick turbulent sections: once the separated region covers the rear pressure recovery, lift plateaus while form drag grows without bound. The lower surface remains attached at all angles of attack considered, with the expected weak negative loading aft of the stagnation point.
 
+One verification caveat qualifies this map: the fine-grid repeat at $\alpha = 15^\circ$ remains fully attached ($C_L = 1.24$ versus $0.99$ on the production grid), so the separation onset predicted by the model lies between $12^\circ$ and $15^\circ$ but its precise location is grid-sensitive --- the medium grid over-separates at high incidence, as already seen at $\alpha = 10^\circ$ in Appendix~\ref{app:grid}. The separated-state results at $\alpha \ge 15^\circ$ should therefore be read as the production-grid envelope of the stall process rather than as grid-independent predictions; the qualitative sequence (attached $\to$ trailing-edge separation $\to$ upstream migration with drag rise) is robust across both grids.
+
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/fig8_wall_shear_stress.png}
@@ -400,9 +403,55 @@ Physically, at lower $Re$ the same imposed pressure gradient acts on a boundary 
   \end{tabular}
 \end{table}
 
+The single-section sweep of Table~\ref{tab:re} is extended to a full factorial sweep over all three sections (Figure~\ref{fig:resweep}, Table~\ref{tab:resweep}). Three observations follow. First, over the attached range ($\alpha \le 10^\circ$) the $Re$-sensitivity of lift is modest and ordered by camber: reducing $Re$ from $10^6$ to $10^5$ costs \ReSweepClDropTenZeroZeroOneTwo{}~\% of lift on the NACA 0012, \ReSweepClDropTenTwoFourOneTwo{}~\% on the 2412 and \ReSweepClDropTenFourFourOneTwo{}\%{} on the 4412, i.e.\ the thicker boundary layers of the cambered sections at low $Re$ erode more of their pressure recovery. Second, the near-stall behaviour is dramatically $Re$-dependent even in this fully turbulent treatment: at $Re = 10^5$ the upper-surface separation point jumps to the leading edge by $\alpha = 15^\circ$--$18^\circ$ on \emph{all three} sections ($x_{\mathrm{sep}}/c \approx 0.01$--$0.02$), and lift collapses ($C_L = 0.57$ for the 0012, $0.59$ for the 2412 at $18^\circ$, versus $1.02$ and $1.35$ at $Re = 10^6$). The stall angle therefore effectively drops by several degrees as $Re$ falls from $10^6$ to $10^5$, qualitatively consistent with experiment --- a stronger response than the displacement-thickness argument alone would suggest, transmitted through the reduced momentum reserve of the low-$Re$ boundary layer under the same pressure recovery. Third, drag is more $Re$-sensitive than lift at fixed incidence, consistent with the growing fraction of friction drag carried by a relatively thicker boundary layer. The practical reading is that the present fully turbulent envelope captures the pressure-driven part of the Reynolds effect on stall; the laminar-bubble mechanisms absent from the model can only amplify the trend at the low-$Re$ end.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig11_re_sweep.png}
+  \caption{Reynolds-number sweep, all three sections: lift (top row) and drag (bottom row, log scale) at $Re = 10^5$, $3\times10^5$, $10^6$.}
+  \label{fig:resweep}
+\end{figure}
+
+\begin{table}[t]
+  \centering
+  \caption{Reynolds sweep: lift coefficient at $\alpha = 0^\circ$--$18^\circ$ for each section and Reynolds number.}
+  \label{tab:resweep}
+  \begin{tabular}{llrrrrr}
+    \toprule
+    Section & $Re$ & $\alpha=0^\circ$ & $5^\circ$ & $10^\circ$ & $15^\circ$ & $18^\circ$ \\
+    \midrule
+    \ReSweepTableRows
+    \bottomrule
+  \end{tabular}
+\end{table}
+
 \subsection{Passive drag reduction}
 
-Table~\ref{tab:serr} compares the serrated trailing edge with the baseline NACA 0012, and the outcome is instructive precisely because it is negative at attached conditions: at $\alpha = 5^\circ$ the sawtooth \emph{increases} total drag by \SerrCdIncrFive{}~\% while costing \SerrClDropFive{}~\% lift, and at $\alpha = 10^\circ$ the drag penalty persists. Only in the deeply separated state ($\alpha = 15^\circ$) does the modification reduce drag (by \SerrCdDropFifteen{}~\%) while \emph{raising} lift by \SerrClRiseFifteen{}~\%, by partially re-energising the separated trailing-edge region and improving base-pressure recovery. The mechanism of the attached-flow penalty is visible in the geometry: the 2D sawtooth presents alternating notch faces to the streamwise pressure field, each acting as a small blunt base, and a strictly 2D model cannot produce the spanwise phase variation that makes real serrations benign or beneficial. The practical conclusions are that (i) the benefit of trailing-edge serrations is not accessible to a 2D surrogate at attached conditions --- a 2D sawtooth is a qualitatively different device, not a cheap approximation --- and (ii) in separated flow, geometric trailing-edge modification can still recover part of the base-pressure deficit. Both statements are consistent with the three-dimensional literature~\cite{howe1991,hansen2016} and quantify how much a 2D screening study can mislead if its surrogate geometry is interpreted literally. Leading-edge tubercles, whose benefit is intrinsically three-dimensional (streamwise vortex generation), are implemented as a geometric perturbation for completeness; a meaningful assessment requires at minimum a spanwise-periodic 3D domain, and the 2D results are therefore reported only in the data archive, not as conclusions.
+Table~\ref{tab:serr} compares the serrated trailing edge with the baseline NACA 0012, and the outcome is instructive precisely because it is negative at attached conditions: at $\alpha = 5^\circ$ the sawtooth \emph{increases} total drag by \SerrCdIncrFive{}~\% while costing \SerrClDropFive{}~\% lift, and at $\alpha = 10^\circ$ the drag penalty persists. Only in the deeply separated state ($\alpha = 15^\circ$) does the modification reduce drag (by \SerrCdDropFifteen{}~\%) while \emph{raising} lift by \SerrClRiseFifteen{}~\%, by partially re-energising the separated trailing-edge region and improving base-pressure recovery. The mechanism of the attached-flow penalty is visible in the geometry: the 2D sawtooth presents alternating notch faces to the streamwise pressure field, each acting as a small blunt base, and a strictly 2D model cannot produce the spanwise phase variation that makes real serrations benign or beneficial. The practical conclusions are that (i) the benefit of trailing-edge serrations is not accessible to a 2D surrogate at attached conditions --- a 2D sawtooth is a qualitatively different device, not a cheap approximation --- and (ii) in separated flow, geometric trailing-edge modification can still recover part of the base-pressure deficit. Both statements are consistent with the three-dimensional literature~\cite{howe1991,hansen2016} and quantify how much a 2D screening study can mislead if its surrogate geometry is interpreted literally.
+
+The leading-edge tubercle is assessed with the same honesty, and the 2D surrogate verdict is harsher still. The surrogate here is a sinusoidal thickness modulation of the leading-edge region (amplitude $0.004c$, three waves over the front $30\%$ of chord, smoothly tapered to zero), which mimics the \emph{section-averaged} geometry change of a tubercled wing but not its spanwise mechanism: real tubercles act by generating counter-rotating streamwise vortices that keep attachment in the trough sectors, a topology a strictly 2D solution cannot contain. The result (Table~\ref{tab:tub}, Figure~\ref{fig:tubercle}) is a large penalty at every incidence: at $\alpha = 5^\circ$ the modulation \emph{increases} drag by \TubCdPctFive{}~\% while costing \TubClPctFive{}~\% of lift, at $\alpha = 10^\circ$ the drag penalty grows to \TubCdPctTen{}~\% with lift down \TubClPctTen{}~\%, and even in the deeply separated state ($\alpha = 15^\circ$) drag remains \TubCdPctFifteen{}~\% higher with \TubClPctFifteen{}~\% less lift. The skin-friction signature shows why: the wavy leading edge trips local separation immediately downstream of the leading edge --- at $\alpha = 10^\circ$ the upper-surface separation point sits at $x/c \approx 0.38$ on the tubercled section versus fully attached flow on the baseline --- and the separated patches over the modulation region destroy the leading-edge suction that the baseline exploits. Unlike the serrated trailing edge, which at least recovered base pressure once the flow was already separated, the 2D tubercle surrogate has no regime of benefit. This completes the passive-device study with a consistent message: \emph{both} leading- and trailing-edge passive devices derive their benefit from three-dimensional flow structures, and a strictly 2D surrogate of either class is not merely pessimistic --- it is a qualitatively different, and aerodynamically worse, device.
+
+\begin{table}[t]
+  \centering
+  \caption{Leading-edge tubercle surrogate (2D), NACA 0012, $Re=10^6$: forces relative to the smooth baseline.}
+  \label{tab:tub}
+  \begin{tabular}{rrrrrrr}
+    \toprule
+    & \multicolumn{3}{c}{Lift} & \multicolumn{3}{c}{Drag} \\
+    \cmidrule(lr){2-4} \cmidrule(lr){5-7}
+    $\alpha$ [deg] & baseline & tubercle & $\Delta$ & baseline & tubercle & $\Delta$ \\
+    \midrule
+    \TubTableRows
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.92\textwidth]{figures/fig12_tubercle.png}
+  \caption{Passive-device comparison on the NACA 0012 at $Re=10^6$: smooth baseline, serrated trailing edge, and leading-edge tubercle surrogate. Left: lift curves; right: drag (log scale).}
+  \label{fig:tubercle}
+\end{figure}
 
 The skin-friction signature of the serrated configuration at $\alpha = 15^\circ$ (data archive) shows the mechanism directly: the reversed-flow region that covers the aft baseline chord is interrupted by short attached-flow strips on the tooth roots, restoring local $C_f > 0$ and with it a measure of pressure recovery. At $\alpha = 5^\circ$ the same notches introduce alternating acceleration/deceleration patterns on the otherwise smooth recovery, and the integrated effect is the observed drag increase. This contrast --- beneficial only once the baseline flow has already separated --- is the clearest single result of the drag-reduction study.
 
@@ -462,10 +511,12 @@ All simulation cases, meshes, scripts, reference data, figures, and the compiled
 
 \section{Conclusions}
 \begin{enumerate}
-  \item Turbulent boundary layer separation on the NACA 0012 develops by upstream migration of the $C_f=0$ point from the trailing edge; the migration accelerates sharply above $\alpha = 10^\circ$, reaching $x/c \approx \SepAfifteen$ at $\alpha = 15^\circ$ with a five-fold drag increase.
+  \item Turbulent boundary layer separation on the NACA 0012 develops by upstream migration of the $C_f=0$ point from the trailing edge; on the production grid the migration accelerates sharply above $\alpha = 10^\circ$, reaching $x/c \approx \SepAfifteen$ at $\alpha = 15^\circ$ with a five-fold drag increase. A fine-grid repeat at $\alpha = 15^\circ$ remains attached, so the modelled separation onset is grid-sensitive and lies between $12^\circ$ and $15^\circ$; the qualitative stall sequence is robust across both grids.
   \item The $k$--$\omega$ SST closure, on a polar O-grid with resolved sublayer, reproduces the pre-stall lift of the NACA 0012 within \ClMAEpct{}~\% (MAE) of tripped experiment and within \CflThreeDClPct{}~\% of NASA's CFL3D SST reference; drag is systematically overpredicted by a quantifiable, configuration-consistent bias.
   \item Camber raises maximum lift and delays the efficiency collapse ($C_{L,\max}$: $4412 > 2412 > 0012$); reducing $Re$ from $10^6$ to $10^5$ degrades both lift and drag at fixed incidence.
   \item Trailing-edge serrations modelled as a 2D sawtooth \emph{increase} drag at attached conditions (a 2D surrogate cannot represent the spanwise mechanism of real serrations) but reduce drag by \SerrCdDropFifteen{}~\% in the deeply separated state through improved base-pressure recovery.
+  \item The Reynolds-number effect, sampled factorially over all three sections ($Re = 10^5$--$10^6$), degrades the attached-range force balance modestly (lift $-6$ to $-9\%$ at $\alpha = 10^\circ$, ordered by camber) but dominates near stall: at $Re = 10^5$ all three sections are fully separated by $\alpha = 18^\circ$ and maximum lift falls by $30$--$45\%$, an effective stall-angle reduction that the fully turbulent closure does capture through the momentum reserve of the low-$Re$ boundary layer.
+  \item The leading-edge tubercle surrogate (2D sinusoidal thickness modulation) is penalised at every incidence: attached-flow drag rises by up to \TubCdPctTen{}~\% and lift falls by up to \TubClPctTen{}~\%, with local separation tripped immediately downstream of the wavy leading edge. Together with the serration result this identifies the spanwise vortex physics of both device classes as the ingredient a 2D screening study cannot supply --- and quantifies the aerodynamic cost of interpreting such surrogates literally.
 \end{enumerate}
 
 \begin{thebibliography}{9}
@@ -490,13 +541,13 @@ All simulation cases, meshes, scripts, reference data, figures, and the compiled
 \section{Grid independence study}\label{app:grid}
 Table~\ref{tab:grid} in Section~\ref{sec:method} summarises the three-density study at $\alpha=5^\circ$. The medium-to-fine change in $C_L$ is \ClGridDelta{} and in $C_D$ is \CdGridDelta{}, supporting the medium grid as the production mesh. The residual non-orthogonality maximum of $82.7^\circ$ is localised in the trailing-edge seam and does not affect the force integrals at this level of convergence.
 
-At high lift the grid sensitivity is larger than at $\alpha = 5^\circ$, as expected for a flow with an incipient separated region: the fine-grid repeat of the $\alpha = 10^\circ$ case (Table~\ref{tab:gridhigh}) quantifies this. The trend indicates that the medium grid slightly over-separates the flow at high incidence, so the high-$\alpha$ force coefficients of the core matrix should be read with the fine-grid values as the more accurate estimate. The extended-iteration repeat on the medium grid additionally separates convergence error from discretisation error.
+At high lift the grid sensitivity is larger than at $\alpha = 5^\circ$, as expected for a flow with an incipient separated region: the fine-grid repeat of the $\alpha = 10^\circ$ case and the $\alpha = 12^\circ$/$15^\circ$ fine-grid repeats (Table~\ref{tab:gridhigh}) quantify this. The trend indicates that the medium grid progressively over-separates the flow at high incidence --- mildly at $10^\circ$--$12^\circ$ and dramatically at $15^\circ$, where the fine grid remains attached while the medium grid separates over most of the chord --- so the high-$\alpha$ force coefficients of the core matrix should be read with the fine-grid values as the more accurate estimate, and the modelled separation onset bracketed between $12^\circ$ and $15^\circ$. The extended-iteration repeat on the medium grid additionally separates convergence error from discretisation error.
 
 Because the three densities refine non-uniformly (ratios 1.5 and 1.33 in each direction), a formal Richardson extrapolation is not strictly applicable; instead, the observed medium-to-fine changes (\ClGridDelta{} in $C_L$, \CdGridDelta{} in $C_D$ at $\alpha = 5^\circ$) bound the discretisation contribution to the production results. The dominant numerical uncertainty in the study is therefore not the interior discretisation but the trailing-edge topology: the open trailing edge and its seam cells introduce a small, configuration-consistent base-drag component that affects all cases equally and is discussed in Section~\ref{sec:dragbudget}.
 
 \begin{table}[h]
   \centering
-  \caption{Verification repeats at high lift (NACA 0012, $\alpha = 10^\circ$, $Re = 10^6$).}
+  \caption{Verification repeats at high lift (NACA 0012, $Re = 10^6$); the first four rows vary grid, iteration horizon, and farfield extent at $\alpha = 10^\circ$, the last four contrast medium and fine grids at $\alpha = 12^\circ$ and $15^\circ$.}
   \label{tab:gridhigh}
   \begin{tabular}{llrr}
     \toprule

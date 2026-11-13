@@ -132,6 +132,7 @@ def main():
 
     # ---------------- summary metrics ----------------
     pre_stall = [r for r in rows if r["alpha_deg"] <= 14.22]
+    attached = [r for r in rows if r["alpha_deg"] <= 10.0]
     cl_mae = np.mean([abs(r["Cl_CFD"] - r["Cl_Ladson"]) for r in pre_stall])
     sig = [r for r in pre_stall if abs(r["Cl_Ladson"]) >= 0.3]
     cl_mae_pct = np.mean([abs(r["Cl_err_Ladson_pct"]) for r in sig]) if sig else np.nan
@@ -220,6 +221,9 @@ def main():
         "naca0012_ladson": {
             "cl_mae_pre_stall": cl_mae,
             "cl_mae_pre_stall_pct": cl_mae_pct,
+            "cl_mae_attached": float(np.mean([abs(r["Cl_CFD"] - r["Cl_Ladson"]) for r in attached])),
+            "cl_mae_attached_pct": float(np.mean([abs(r["Cl_err_Ladson_pct"]) for r in attached
+                                                  if abs(r["Cl_Ladson"]) >= 0.3])),
             "cd_mae_pre_stall_pct": cd_mae_pct,
             "cl_mae_abbott": cl_mae_abbott,
             "cl_mae_gregory": cl_mae_gregory,

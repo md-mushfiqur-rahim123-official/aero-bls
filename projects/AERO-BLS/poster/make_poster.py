@@ -152,7 +152,7 @@ def main():
     <ul>
       <li>Analytic NACA 4-digit geometry → serrated / tubercle variants</li>
       <li>Structured O-grid generator → Gmsh v2.2 → gmshToFoam</li>
-      <li>22 scripted OpenFOAM cases (15 core + Re/grid/serration)</li>
+      <li>64 scripted OpenFOAM cases (21 core + full Re sweep + grid/serration/tubercle)</li>
       <li>Forces, Cp, Cf, separation from wall shear reversal</li>
       <li>Validation: NASA TMR NACA 0012 (Ladson, Gregory, Abbott) + CFL3D SST</li>
     </ul>
@@ -184,8 +184,8 @@ def main():
     <ul>
       <li>Pre-stall lift matches tripped experiment within ≈ few % (MAE); drag biased high by the fully turbulent assumption — quantified and consistent.</li>
       <li>Camber orders maximum lift: 4412 &gt; 2412 &gt; 0012; stall softens with camber.</li>
-      <li>Lowering Re from 10<sup>6</sup> to 10<sup>5</sup> cuts lift and raises drag at fixed incidence.</li>
-      <li>Trailing-edge serrations reduce drag at moderate α in the 2D surrogate via trailing-edge pressure recovery.</li>
+      <li>Lowering Re from 10<sup>6</sup> to 10<sup>5</sup> cuts lift and raises drag at fixed incidence; the stall-angle shift is muted by the fully turbulent closure.</li>
+      <li>2D serrated TE <i>increases</i> attached-flow drag (+8.6% at α = 5°) but cuts drag −13.6% at α = 15° via base-pressure recovery; the 2D tubercle surrogate is a null result — both devices need spanwise (3D) physics.</li>
     </ul>
     <img src="../latex/figures/fig2_cl_vs_alpha.png" alt="Lift curves">
   </div>

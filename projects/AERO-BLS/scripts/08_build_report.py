@@ -61,8 +61,10 @@ def main():
 
     m = {}
     lad = metrics.get("naca0012_ladson", {})
-    m["ClMAEpct"] = f"{lad.get('cl_mae_pre_stall_pct', 0):.1f}" if lad else "n/a"
-    m["ClMaeLadson"] = f"{lad.get('cl_mae_pre_stall', 0):.4f}" if lad else "n/a"
+    m["ClMAEpct"] = f"{lad.get('cl_mae_attached_pct', lad.get('cl_mae_pre_stall_pct', 0)):.1f}" if lad else "n/a"
+    m["ClMaeLadson"] = f"{lad.get('cl_mae_attached', lad.get('cl_mae_pre_stall', 0)):.4f}" if lad else "n/a"
+    m["ClMAEPreStallPct"] = f"{lad.get('cl_mae_pre_stall_pct', 0):.1f}" if lad else "n/a"
+    m["ClMaeLadsonPreStall"] = f"{lad.get('cl_mae_pre_stall', 0):.4f}" if lad else "n/a"
     m["ClMaeAbbott"] = f"{lad.get('cl_mae_abbott', 0):.4f}" if lad else "n/a"
     m["ClMaeGregory"] = f"{lad.get('cl_mae_gregory', 0):.4f}" if lad else "n/a"
     m["CdMaeLadsonAbs"] = f"{lad.get('cd_mae_ladson_abs', 0):.4f}" if lad else "n/a"
@@ -171,7 +173,11 @@ def main():
     for label, mesh_label, case in (("Medium", "4000 iters", "naca0012_aoa10"),
                                     ("Fine", "4000 iters", "naca0012_aoa10_fine"),
                                     ("Medium", "12000 iters", "naca0012_aoa10_long"),
-                                    ("Medium, $R=50c$", "4000 iters", "naca0012_aoa10_farfield50")):
+                                    ("Medium, $R=50c$", "4000 iters", "naca0012_aoa10_farfield50"),
+                                    ("Medium", "$\\alpha=12^\\circ$", "naca0012_aoa12"),
+                                    ("Fine", "$\\alpha=12^\\circ$", "naca0012_aoa12_fine"),
+                                    ("Medium", "$\\alpha=15^\\circ$", "naca0012_aoa15"),
+                                    ("Fine", "$\\alpha=15^\\circ$", "naca0012_aoa15_fine")):
         r = next((x for x in summary if x["case"] == case), None)
         if r:
             gridhigh_rows.append(f"{label} & {mesh_label} & {fmt(float(r['Cl']))} & {fmt(float(r['Cd']))} \\\\")
@@ -193,6 +199,68 @@ def main():
     m["SerrCdDropFifteen"] = f"{serr_drops[15][0]:.1f}" if 15 in serr_drops else "n/a"
     m["SerrClRiseFifteen"] = f"{-serr_drops[15][1]:.1f}" if 15 in serr_drops else "n/a"
     m["SerrCdIncrFive"] = f"{-serr_drops[5][0]:.1f}" if 5 in serr_drops else "n/a"
+
+    re_sweep_rows = []
+    sweep_re_cl = {}
+    for af in ("naca0012", "naca2412", "naca4412"):
+        for re_val in (1e5, 3e5, 1e6):
+            cl_by_a = {}
+            for r in summary:
+                if (r["airfoil"] == af and float(r["reynolds"]) == re_val
+                        and all(s not in r["case"] for s in
+                                ("serr", "coarse", "fine", "farfield", "long", "tub"))):
+                    cl_by_a[int(float(r["alpha_deg"]))] = float(r["Cl"])
+            if not cl_by_a:
+                continue
+            sweep_re_cl[(af, re_val)] = cl_by_a
+            cells = " & ".join(fmt(cl_by_a.get(a)) for a in (0, 5, 10, 15, 18))
+            re_sweep_rows.append(f"{af.upper()} & {re_label.get(re_val, f'{re_val:.0e}')} & {cells} \\\\")
+    m["ReSweepTableRows"] = "\n    ".join(re_sweep_rows) or "--- \\\\"
+
+    def sweep_delta(af, alpha, re_low=1e5, re_high=1e6):
+        hi = sweep_re_cl.get((af, re_high), {}).get(alpha)
+        lo = sweep_re_cl.get((af, re_low), {}).get(alpha)
+        if hi is None or lo is None or abs(hi) < 1e-3:
+            return None
+        return 100 * (hi - lo) / abs(hi)
+    d12 = sweep_delta("naca0012", 10)
+    d24 = sweep_delta("naca2412", 10)
+    d44 = sweep_delta("naca4412", 10)
+    m["ReSweepClDropTenZeroZeroOneTwo"] = f"{d12:.1f}" if d12 is not None else "n/a"
+    m["ReSweepClDropTenTwoFourOneTwo"] = f"{d24:.1f}" if d24 is not None else "n/a"
+    m["ReSweepClDropTenFourFourOneTwo"] = f"{d44:.1f}" if d44 is not None else "n/a"
+
+    tub_rows = []
+    tub_stats = {}
+    for a in (0, 5, 10, 15, 18):
+        base = next((r for r in summary if r["case"] == f"naca0012_aoa{a}"), None)
+        tub = next((r for r in summary if r["case"] == f"naca0012t_aoa{a}"), None)
+        if base and tub:
+            bl, bc = float(base["Cl"]), float(base["Cd"])
+            tl, tc = float(tub["Cl"]), float(tub["Cd"])
+            if abs(bl) < 0.02:
+                dcl_txt = "--"
+                dcl = None
+            else:
+                dcl = 100 * (tl - bl) / abs(bl)
+                dcl_txt = f"{dcl:.1f}\\%"
+            dcd = 100 * (tc - bc) / bc
+            tub_rows.append(f"{a} & {fmt(bl)} & {fmt(tl)} & {dcl_txt} & "
+                            f"{fmt(bc)} & {fmt(tc)} & {dcd:.1f}\\% \\\\")
+            tub_stats[a] = (dcl, dcd)
+    m["TubTableRows"] = "\n    ".join(tub_rows) or "--- \\\\"
+    m["TubCdPctFive"] = f"{tub_stats[5][1]:.1f}" if 5 in tub_stats else "n/a"
+    m["TubClPctFive"] = f"{tub_stats[5][0]:.1f}" if 5 in tub_stats and tub_stats[5][0] is not None else "n/a"
+    m["TubCdPctTen"] = f"{tub_stats[10][1]:.1f}" if 10 in tub_stats else "n/a"
+    m["TubCdPctFifteen"] = f"{tub_stats[15][1]:.1f}" if 15 in tub_stats else "n/a"
+    m["TubClPctTen"] = f"{tub_stats[10][0]:.1f}" if 10 in tub_stats and tub_stats[10][0] is not None else "n/a"
+    m["TubClPctFifteen"] = f"{tub_stats[15][0]:.1f}" if 15 in tub_stats and tub_stats[15][0] is not None else "n/a"
+    tub15 = next((r for r in summary if r["case"] == "naca0012t_aoa15"), None)
+    if tub15:
+        v = tub15.get("sep_upper", "")
+        m["TubSepFifteen"] = f"{float(v):.2f}" if v and v not in ("None", "") else "$>0.99$ (attached)"
+    else:
+        m["TubSepFifteen"] = "n/a"
 
     allforce_rows = []
     for af in ("naca0012", "naca2412", "naca4412"):

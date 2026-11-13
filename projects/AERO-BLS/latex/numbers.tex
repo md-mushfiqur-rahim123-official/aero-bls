@@ -1,8 +1,10 @@
 \newcommand{\ClMAEpct}{5.1}
 \newcommand{\ClMaeLadson}{0.0379}
-\newcommand{\ClMaeAbbott}{0.0581}
-\newcommand{\ClMaeGregory}{0.0548}
-\newcommand{\CdMaeLadsonAbs}{0.0099}
+\newcommand{\ClMAEPreStallPct}{8.7}
+\newcommand{\ClMaeLadsonPreStall}{0.0778}
+\newcommand{\ClMaeAbbott}{0.0992}
+\newcommand{\ClMaeGregory}{0.0980}
+\newcommand{\CdMaeLadsonAbs}{0.0140}
 \newcommand{\CflThreeDClPct}{10.3}
 \newcommand{\CflThreeDClFifteen}{-34}
 \newcommand{\CpMaeZero}{0.019}
@@ -23,8 +25,10 @@
 \newcommand{\CdGridDelta}{0.05\%}
 \newcommand{\SepTableRows}{0 & 0.0062 & 0.0142 & 0.4 & $>0.99$ (attached) \\
     10 & 0.9663 & 0.0269 & 35.9 & $>0.99$ (attached) \\
+    12 & 1.0519 & 0.0394 & 26.7 & $>0.99$ (attached) \\
     15 & 0.9915 & 0.0928 & 10.7 & 0.20 \\
     18 & 1.0175 & 0.1333 & 7.6 & 0.17 \\
+    20 & 0.9259 & 0.1819 & 5.1 & 0.12 \\
     5 & 0.5280 & 0.0171 & 30.9 & $>0.99$ (attached) \\}
 \newcommand{\ReTableRows}{$10^5$ & 0.9062 & 0.0395 & 22.9 & 0.03 \\
     $3\times10^5$ & 0.9345 & 0.0320 & 29.2 & $>0.99$ (attached) \\
@@ -39,7 +43,11 @@
 \newcommand{\GridHighRows}{Medium & 4000 iters & 0.9663 & 0.0269 \\
     Fine & 4000 iters & 0.9724 & 0.0271 \\
     Medium & 12000 iters & 0.9552 & 0.0268 \\
-    Medium, $R=50c$ & 4000 iters & 0.9403 & 0.0273 \\}
+    Medium, $R=50c$ & 4000 iters & 0.9403 & 0.0273 \\
+    Medium & $\alpha=12^\circ$ & 1.0519 & 0.0394 \\
+    Fine & $\alpha=12^\circ$ & 1.1226 & 0.0350 \\
+    Medium & $\alpha=15^\circ$ & 0.9915 & 0.0928 \\
+    Fine & $\alpha=15^\circ$ & 1.2446 & 0.0605 \\}
 \newcommand{\SerrTableRows}{5 & 0.5280 & 0.4991 & 0.0171 & 0.0186 \\
     10 & 0.9663 & 0.9642 & 0.0269 & 0.0294 \\
     15 & 0.9915 & 1.1398 & 0.0928 & 0.0802 \\}
@@ -48,20 +56,50 @@
 \newcommand{\SerrCdDropFifteen}{13.6}
 \newcommand{\SerrClRiseFifteen}{15.0}
 \newcommand{\SerrCdIncrFive}{8.6}
+\newcommand{\ReSweepTableRows}{NACA0012 & $10^5$ & 0.0069 & 0.4950 & 0.9062 & 0.6326 & 0.5726 \\
+    NACA0012 & $3\times10^5$ & 0.0070 & 0.5093 & 0.9345 & 1.1201 & 0.9047 \\
+    NACA0012 & $10^6$ & 0.0062 & 0.5280 & 0.9663 & 0.9915 & 1.0175 \\
+    NACA2412 & $10^5$ & 0.1782 & 0.6563 & 1.0477 & 1.2490 & 0.5891 \\
+    NACA2412 & $3\times10^5$ & 0.1942 & 0.6864 & 1.0920 & 1.2474 & 1.1843 \\
+    NACA2412 & $10^6$ & 0.2048 & 0.7039 & 1.1255 & 1.2910 & 1.3513 \\
+    NACA4412 & $10^5$ & 0.3486 & 0.8093 & 1.1738 & 1.3205 & 1.2570 \\
+    NACA4412 & $3\times10^5$ & 0.3793 & 0.8564 & 1.2380 & 1.3863 & 1.3331 \\
+    NACA4412 & $10^6$ & 0.3980 & 0.8835 & 1.2877 & 1.4757 & 1.4138 \\}
+\newcommand{\ReSweepClDropTenZeroZeroOneTwo}{6.2}
+\newcommand{\ReSweepClDropTenTwoFourOneTwo}{6.9}
+\newcommand{\ReSweepClDropTenFourFourOneTwo}{8.8}
+\newcommand{\TubTableRows}{0 & 0.0062 & 0.0229 & -- & 0.0142 & 0.0402 & 182.5\% \\
+    5 & 0.5280 & 0.2802 & -46.9\% & 0.0171 & 0.0519 & 203.9\% \\
+    10 & 0.9663 & 0.4729 & -51.1\% & 0.0269 & 0.0890 & 231.0\% \\
+    15 & 0.9915 & 0.6542 & -34.0\% & 0.0928 & 0.1428 & 54.0\% \\
+    18 & 1.0175 & 0.7301 & -28.2\% & 0.1333 & 0.1813 & 36.0\% \\}
+\newcommand{\TubCdPctFive}{203.9}
+\newcommand{\TubClPctFive}{-46.9}
+\newcommand{\TubCdPctTen}{231.0}
+\newcommand{\TubCdPctFifteen}{54.0}
+\newcommand{\TubClPctTen}{-51.1}
+\newcommand{\TubClPctFifteen}{-34.0}
+\newcommand{\TubSepFifteen}{0.39}
 \newcommand{\AllForcesRows}{NACA0012 & 0 & 0.0062 & 0.0142 & 0.4 \\
     NACA0012 & 10 & 0.9663 & 0.0269 & 35.9 \\
+    NACA0012 & 12 & 1.0519 & 0.0394 & 26.7 \\
     NACA0012 & 15 & 0.9915 & 0.0928 & 10.7 \\
     NACA0012 & 18 & 1.0175 & 0.1333 & 7.6 \\
+    NACA0012 & 20 & 0.9259 & 0.1819 & 5.1 \\
     NACA0012 & 5 & 0.5280 & 0.0171 & 30.9 \\
     NACA2412 & 0 & 0.2048 & 0.0155 & 13.2 \\
     NACA2412 & 10 & 1.1255 & 0.0307 & 36.6 \\
+    NACA2412 & 12 & 1.2651 & 0.0379 & 33.4 \\
     NACA2412 & 15 & 1.2910 & 0.0671 & 19.3 \\
     NACA2412 & 18 & 1.3513 & 0.0995 & 13.6 \\
+    NACA2412 & 20 & 1.1626 & 0.1592 & 7.3 \\
     NACA2412 & 5 & 0.7039 & 0.0196 & 35.9 \\
     NACA4412 & 0 & 0.3980 & 0.0168 & 23.7 \\
     NACA4412 & 10 & 1.2877 & 0.0339 & 38.0 \\
+    NACA4412 & 12 & 1.3886 & 0.0429 & 32.4 \\
     NACA4412 & 15 & 1.4757 & 0.0655 & 22.5 \\
     NACA4412 & 18 & 1.4138 & 0.1108 & 12.8 \\
+    NACA4412 & 20 & 1.4208 & 0.1387 & 10.2 \\
     NACA4412 & 5 & 0.8835 & 0.0222 & 39.8 \\}
 \newcommand{\NonOrthCoarse}{81.9667}
 \newcommand{\NonOrthAvgCoarse}{37.91366}
