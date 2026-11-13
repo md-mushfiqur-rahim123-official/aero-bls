@@ -437,6 +437,37 @@ def fig12_tubercle(summary):
     plt.close(fig)
 
 
+def fig13_transition(summary):
+    """Fully turbulent vs gamma-Re_thetat transition model at Re = 1e5."""
+    fig, axes = plt.subplots(2, 3, figsize=(10.8, 6.2), sharex=True)
+    keep = ("serr", "coarse", "fine", "farfield", "long", "tub")
+    for col, af in enumerate(AIRFOILS):
+        for row, (key, ylab) in enumerate((("Cl", r"$C_L$"), ("Cd", r"$C_D$"))):
+            ax = axes[row, col]
+            for suffix, lab, style in (("", "Fully turbulent", "o-"),
+                                       ("tr", r"$\gamma$-$Re_{\theta t}$", "s--")):
+                rows = [r for r in summary
+                        if r["airfoil"] == af + suffix
+                        and float(r["reynolds"]) == 1e5
+                        and all(s not in r["case"] for s in keep)]
+                if not rows:
+                    continue
+                a, v = series(sorted(rows, key=lambda r: float(r["alpha_deg"])), key)
+                ax.plot(a, v, style, ms=3.5, label=lab)
+            ax.set_title(af.upper(), fontsize=10)
+            if row == 1:
+                ax.set_xlabel(r"$\alpha$ [deg]")
+            if col == 0:
+                ax.set_ylabel(ylab)
+            if key == "Cd":
+                ax.set_yscale("log")
+            if row == 0 and col == 2:
+                ax.legend(fontsize=8)
+    fig.suptitle(r"Transition sensitivity at $Re=10^5$: fully turbulent vs $\gamma$-$Re_{\theta t}$")
+    fig.savefig(os.path.join(FIGS, "fig13_transition.png"))
+    plt.close(fig)
+
+
 def main():
     os.makedirs(FIGS, exist_ok=True)
     summary = load_summary()
@@ -453,6 +484,7 @@ def main():
     fig10_cp_validation()
     fig11_re_sweep(summary)
     fig12_tubercle(summary)
+    fig13_transition(summary)
     made = sorted(os.path.basename(p) for p in glob.glob(os.path.join(FIGS, "*.png")))
     print("[done] figures:", ", ".join(made))
 

@@ -262,6 +262,54 @@ def main():
     else:
         m["TubSepFifteen"] = "n/a"
 
+    def tr_get(af, alpha, key):
+        for r in summary:
+            if (r["airfoil"] == af + "tr" and abs(float(r["alpha_deg"]) - alpha) < 0.01
+                    and float(r["reynolds"]) == 1e5):
+                v = r.get(key, "")
+                return float(v) if v and v not in ("None", "") else None
+        return None
+
+    def ft_get(af, alpha, key):
+        for r in summary:
+            if (r["airfoil"] == af and abs(float(r["alpha_deg"]) - alpha) < 0.01
+                    and float(r["reynolds"]) == 1e5
+                    and all(s not in r["case"] for s in
+                            ("serr", "coarse", "fine", "farfield", "long", "tub"))):
+                v = r.get(key, "")
+                return float(v) if v and v not in ("None", "") else None
+        return None
+
+    tr_rows = []
+    tr_stats = {}
+    for af, tag in (("naca0012", "ZeroZeroOneTwo"), ("naca2412", "TwoFourOneTwo"),
+                    ("naca4412", "FourFourOneTwo")):
+        for alpha in (0, 5, 10, 15, 18):
+            cl_ft, cl_tr = ft_get(af, alpha, "Cl"), tr_get(af, alpha, "Cl")
+            cd_ft, cd_tr = ft_get(af, alpha, "Cd"), tr_get(af, alpha, "Cd")
+            sep_ft, sep_tr = ft_get(af, alpha, "sep_upper"), tr_get(af, alpha, "sep_upper")
+            if cl_ft is None or cl_tr is None:
+                continue
+            dcl = 100 * (cl_tr - cl_ft) / abs(cl_ft) if abs(cl_ft) > 0.02 else None
+            dcd = 100 * (cd_tr - cd_ft) / cd_ft if cd_ft else None
+            def cell(v, nd=4):
+                return f"{v:.{nd}f}" if v is not None else "--"
+            def sep_cell(v):
+                return f"{v:.2f}" if v is not None else "attached"
+            tr_rows.append(
+                f"{af.upper()} & {alpha} & {cell(cl_ft)} & {cell(cl_tr)} & "
+                f"{cell(dcl, 1)} & {cell(cd_ft)} & {cell(cd_tr)} & {cell(dcd, 1)} & "
+                f"{sep_cell(sep_ft)} & {sep_cell(sep_tr)} \\\\")
+            tr_stats[(af, alpha)] = (dcl, dcd)
+    m["TrTableRows"] = "\n    ".join(tr_rows) or "--- \\\\"
+    for af, tag in (("naca0012", "ZeroZeroOneTwo"), ("naca2412", "TwoFourOneTwo"),
+                    ("naca4412", "FourFourOneTwo")):
+        for alpha, aname in ((0, "Zero"), (5, "Five"), (10, "Ten"),
+                             (15, "Fifteen"), (18, "Eighteen")):
+            dcl, dcd = tr_stats.get((af, alpha), (None, None))
+            m[f"TrClPct{aname}{tag}"] = f"{dcl:.1f}" if dcl is not None else "n/a"
+            m[f"TrCdPct{aname}{tag}"] = f"{dcd:.1f}" if dcd is not None else "n/a"
+
     allforce_rows = []
     for af in ("naca0012", "naca2412", "naca4412"):
         for r in core:

@@ -38,7 +38,7 @@ def substitute(path, mapping):
         f.write(text)
 
 
-def prepare(airfoil, alpha, re, case_dir, mesh_path, end_time=4000):
+def prepare(airfoil, alpha, re, case_dir, mesh_path, end_time=4000, template="base_case"):
     u_inf = re * NU_AIR / CHORD
     alpha_rad = math.radians(alpha)
     ux, uy = u_inf * math.cos(alpha_rad), u_inf * math.sin(alpha_rad)
@@ -48,7 +48,7 @@ def prepare(airfoil, alpha, re, case_dir, mesh_path, end_time=4000):
 
     if os.path.exists(case_dir):
         shutil.rmtree(case_dir)
-    shutil.copytree(os.path.join(ROOT, "openfoam_cases", "base_case"), case_dir)
+    shutil.copytree(os.path.join(ROOT, "openfoam_cases", template), case_dir)
 
     mapping = {
         "__UX__": f"{ux:.8f}",
@@ -92,8 +92,10 @@ def main():
     ap.add_argument("--case", required=True)
     ap.add_argument("--mesh", required=True)
     ap.add_argument("--end-time", type=int, default=4000)
+    ap.add_argument("--template", default="base_case")
     args = ap.parse_args()
-    prepare(args.airfoil, args.alpha, args.re, args.case, args.mesh, args.end_time)
+    prepare(args.airfoil, args.alpha, args.re, args.case, args.mesh, args.end_time,
+            args.template)
 
 
 if __name__ == "__main__":

@@ -9,7 +9,10 @@ stall, and passive drag reduction on the NACA 0012, 2412, and 4412 sections.
   + full Reynolds sweep (Re = 10⁵, 3×10⁵ for **all three** airfoils, α = 0–18°)
   + grid independence (coarse/medium/fine) + farfield/convergence verification
   + trailing-edge serration and leading-edge tubercle (2D surrogate) cases
-  — **64 cases total**
+  + transition-sensitive repeats with the γ–Re_θt (Langtry–Menter) closure:
+    NACA 0012 × α = 0–18° × Re = 10⁵/3×10⁵/10⁶ and NACA 2412/4412 × α = 0–18° at Re = 10⁵,
+    warm-started from the converged fully turbulent siblings
+  — **91 cases total**
 - **Validation:** NASA Turbulence Modeling Resource NACA 0012 datasets
   (Ladson TM-4074 tripped forces, Gregory & O'Reilly R&M 3726, Abbott & von Doenhoff)
   and NASA CFL3D SST reference results
@@ -20,7 +23,7 @@ stall, and passive drag reduction on the NACA 0012, 2412, and 4412 sections.
 projects/AERO-BLS/
 ├── airfoils/            # analytic NACA 4-digit coordinates (638 pts)
 ├── mesh/                # generated Gmsh v2.2 hex meshes + metadata
-├── openfoam_cases/      # base_case template + 22 staged cases
+├── openfoam_cases/      # base_case templates + 91 staged cases
 ├── scripts/             # 00–08 pipeline (see below)
 ├── data/
 │   ├── experimental/    # NASA TMR .dat reference files
