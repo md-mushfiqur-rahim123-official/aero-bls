@@ -11,7 +11,8 @@ question retained as an explicit **2D negative control** (Appendix D of the pape
   (50-chord verification mesh for the URANS subset)
 - **Matrix:** 21 core cases (3 airfoils × α = 0°, 5°, 10°, 12°, 15°, 18°, 20° at Re = 10⁶)
   + full Reynolds sweep (Re = 10⁵, 3×10⁵ for **all three** airfoils, α = 0–18°)
-  + grid independence (coarse/medium/fine) + farfield/convergence verification
+  + grid independence (coarse/medium/fine at α = 5°, full family at the stall
+    angle α = 15°, fine repeat at α = 18°) + farfield/convergence verification
   + trailing-edge serration and leading-edge tubercle (2D surrogate) cases
   + transition-sensitive repeats with the γ–Re_θt (Langtry–Menter) closure:
     NACA 0012/2412/4412 × α = 0–18° × Re = 10⁵/3×10⁵/10⁶ (full factorial, 45 cases),
@@ -22,7 +23,7 @@ question retained as an explicit **2D negative control** (Appendix D of the pape
   + URANS verification subset (pimpleFoam, k–ω SST, 50-chord farfield,
     33,740-cell mesh): NACA 0012 γ–Re_θt-warm-started, α = 12°/15° at
     Re = 3.6×10⁵, two-stage integration (dt = 10⁻⁵ spin-up, Co ≤ 20 production)
-  — **123 cases total**
+  — **125 cases total** (123 steady + 2 URANS)
 - **Validation:** primary = Reynolds-matched Sandia SAND80-2114 (Re = 3.6×10⁵);
   NASA Turbulence Modeling Resource datasets (Ladson TM-4074 tripped forces,
   Gregory & O'Reilly R&M 3726, Abbott & von Doenhoff) and NASA CFL3D SST
