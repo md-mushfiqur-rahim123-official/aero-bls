@@ -226,7 +226,7 @@ The core matrix comprises 21 cases: three sections at $\alpha = 0^\circ, 5^\circ
     \midrule
     Core (21) & $\{0012, 2412, 4412\} \times \alpha \in \{0,5,10,12,15,18,20^\circ\}$, $Re=10^6$, medium & Separation map, camber effect, stall onset \\
     Reynolds (30) & $\{0012, 2412, 4412\} \times \alpha \in \{0..18^\circ\}$, $Re \in \{10^5, 3\times10^5\}$ & Reynolds sensitivity, all sections \\
-    Grid (4) & 0012, $\alpha=5^\circ$ and $\alpha=15^\circ$: coarse/medium/fine & Discretisation uncertainty; stall-branch diagnosis \\
+    Grid (4) & 0012, $\alpha=5^\circ$ and $\alpha=15^\circ$: coarse/fine repeats (medium = core) & Discretisation uncertainty; stall-branch diagnosis \\
     Serration (3) & 0012 serrated, $\alpha \in \{5,10,15\}^\circ$ & Drag reduction \\
     Tubercle (5) & 0012 LE-modulated, $\alpha \in \{0..18^\circ\}$ & Drag reduction (2D surrogate) \\
     Transition (45) & $\gamma$--$Re_{\theta t}$ repeats, full factorial: $\{0012, 2412, 4412\} \times \alpha \in \{0..18^\circ\} \times Re \in \{10^5, 3\times10^5, 10^6\}$ & Laminar-run and bubble physics \\
@@ -607,7 +607,7 @@ Figure~\ref{fig:conv} shows representative convergence histories. Attached cases
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.75\textwidth]{figures/appendix_convergence.png}
-  \caption{Force-coefficient convergence history, NACA 0012 at $\alpha=5^\circ$ and $\alpha=15^\circ$.}
+  \caption{Force-coefficient convergence history, NACA 0012 at $\alpha=5^\circ$ and $\alpha=15^\circ$. Solid curves: $C_L$ (left axis); dashed curves: $C_D$ (right axis). The start-up transient is omitted for scale.}
   \label{fig:conv}
 \end{figure}
 
