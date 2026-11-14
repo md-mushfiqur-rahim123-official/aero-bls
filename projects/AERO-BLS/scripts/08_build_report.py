@@ -202,7 +202,9 @@ def main():
                                     ("Coarse", "$\\alpha=15^\\circ$", "naca0012_aoa15_coarse")):
         r = next((x for x in summary if x["case"] == case), None)
         if r:
-            gridhigh_rows.append(f"{label} & {mesh_label} & {fmt(float(r['Cl']))} & {fmt(float(r['Cd']))} \\\\")
+            v = r.get("sep_upper", "")
+            sep = f"{float(v):.2f}" if v and v not in ("None", "") else "attached"
+            gridhigh_rows.append(f"{label} & {mesh_label} & {fmt(float(r['Cl']))} & {fmt(float(r['Cd']))} & {sep} \\\\")
     m["GridHighRows"] = "\n    ".join(gridhigh_rows) if gridhigh_rows else "--- & --- & --- & --- \\\\"
 
     serr_rows = []
