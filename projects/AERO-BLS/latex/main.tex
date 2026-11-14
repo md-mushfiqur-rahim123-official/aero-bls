@@ -659,6 +659,7 @@ The skin-friction signature of the serrated configuration at $\alpha = 15^\circ$
 The serration results, read together with the separation map, support three practical statements. First, passive trailing-edge devices of this class operate on the pressure recovery, so they deliver their benefit only while the boundary layer is attached or mildly separated --- at $\alpha = 15^\circ$ in the present computations the serration is buried in a separated region and its effect reverses sign: drag drops by \SerrCdDropFifteen{}\% and lift rises. Second, at attached conditions the 2D sawtooth carries a drag \emph{penalty} of order \SerrCdIncrFive{}\%, so the net effect on $C_L/C_D$ must be evaluated for the actual operating condition; the surrogate device is not uniformly beneficial. Third, because the dominant benefit of real serrations and tubercles is three-dimensional (spanwise decorrelation, streamwise vortices), any design decision should be based on spanwise-periodic or full-3D simulations before hardware is committed; the present 2D workflow is the correct tool for screening the streamwise component and for building the separation map, not for final device design.
 
 \section{Reproducibility manifest}\label{app:repro}
+\enlargethispage{2\baselineskip}
 Every number, figure, and table in this paper is produced by the pipeline in the project repository:
 \texttt{01\_fetch\_airfoil\_coords.py} (geometry), \texttt{02\_generate\_mesh.py} (meshes),
 \texttt{03\_prepare\_cases.py} (case staging), \texttt{04\_run\_all\_cases.sh} (batch execution),
