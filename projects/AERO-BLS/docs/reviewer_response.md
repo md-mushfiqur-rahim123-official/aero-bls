@@ -67,3 +67,41 @@ We thank the reviewer for a rigorous and constructive assessment. We accept the 
 | 7. Mesh/farfield | 50c farfield URANS grid; non-orthogonality reported; C-topology future work |
 
 **Revised target:** Aerospace Science and Technology, Journal of Aircraft, or Journal of Applied Fluid Mechanics — applied journals where a rigorous, fully reproducible transition-model comparison with matched-Re validation is in scope.
+
+---
+
+# Addendum — post-review actions (second review round, score 95/100)
+
+After the second review round (95/100, "publication-ready for preprint"), the two remaining
+deductions were both simulation-dependent. The following additional work was carried out:
+
+## 1. Fine-grid repeat at alpha = 18 deg (grid convergence at high incidence)
+
+The reviewer's item 2b requested fine-grid re-runs of the high-alpha core cases.
+Fine-grid repeats existed at alpha = 12 deg and 15 deg; the missing post-stall point
+alpha = 18 deg has now been run (`naca0012_aoa18_fine`, 51,360 cells, steady, Re = 10^6,
+4000 iterations, Mesh OK):
+
+| Grid | C_L | C_D | x_sep/c |
+|---|---|---|---|
+| Medium (33,740) | 1.0175 | 0.1333 | 0.17 |
+| Fine (51,360) | 1.1417 | 0.1292 | 0.15 |
+
+Unlike at alpha = 15 deg (three grids, three separation branches), at alpha = 18 deg the
+medium and fine grids select the **same deeply separated branch**: separation locations
+agree to 0.02c and drag to 3%. The 11% lift spread is consistent with slow force drift of
+a deeply separated steady state at the iteration limit, not a branch change. The grid
+sensitivity of the high-alpha matrix is therefore confined to the stall-onset angle.
+The case matrix is now 125 runs (123 steady + 2 URANS); tab:gridhigh, Appendix A,
+Table 5, and the case tree in `openfoam_cases/` are updated accordingly.
+
+## 2. URANS horizon extension (statistical stationarity)
+
+Both URANS cases were reconfigured from endTime t = 0.25 s (t* = 1.35) to endTime
+t = 1.0 s (t* = 5.4), with field output every 0.05 s, and are being re-integrated.
+The alpha = 15 deg case required a restart at dt = 3.4e-5 s after an abort in the
+gamma-Re_thetat correlation solve at the nominal step (the same remedy as the earlier
+alpha = 12 deg restart). When the extended horizon accumulates, the production window
+will be widened (target t = 0.15-0.45 s, t* = 0.81-2.4, n ~ 61) and the URANS section,
+tab:urans, and the force-history figure regenerated. A fully stationary 5-8-flow-pass
+average remains out of reach of the present compute budget and stays listed as future work.
