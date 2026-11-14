@@ -126,6 +126,26 @@ def main():
     else:
         m["ClGridDelta"] = m["CdGridDelta"] = "n/a"
 
+    stall_coarse = next((r for r in summary if r["case"] == "naca0012_aoa15_coarse"), None)
+    stall_medium = next((r for r in summary if r["case"] == "naca0012_aoa15"), None)
+    stall_fine = next((r for r in summary if r["case"] == "naca0012_aoa15_fine"), None)
+    if stall_coarse:
+        m["ClStallCoarse"] = fmt(float(stall_coarse["Cl"]))
+        m["CdStallCoarse"] = fmt(float(stall_coarse["Cd"]))
+        v = stall_coarse.get("sep_upper", "")
+        m["SepStallCoarse"] = f"{float(v):.2f}" if v and v not in ("None", "") else "n/a"
+    else:
+        m["ClStallCoarse"] = m["CdStallCoarse"] = m["SepStallCoarse"] = "n/a"
+    if stall_coarse and stall_medium and stall_fine:
+        eps21 = float(stall_medium["Cl"]) - float(stall_fine["Cl"])
+        eps32 = float(stall_coarse["Cl"]) - float(stall_medium["Cl"])
+        m["StallClRatio"] = f"{eps32 / eps21:+.2f}" if eps21 != 0 else "n/a"
+        eps21d = float(stall_medium["Cd"]) - float(stall_fine["Cd"])
+        eps32d = float(stall_coarse["Cd"]) - float(stall_medium["Cd"])
+        m["StallCdRatio"] = f"{eps32d / eps21d:+.2f}" if eps21d != 0 else "n/a"
+    else:
+        m["StallClRatio"] = m["StallCdRatio"] = "n/a"
+
     sep_rows = []
     for r in core:
         if r["airfoil"] != "naca0012":
@@ -178,7 +198,8 @@ def main():
                                     ("Medium", "$\\alpha=12^\\circ$", "naca0012_aoa12"),
                                     ("Fine", "$\\alpha=12^\\circ$", "naca0012_aoa12_fine"),
                                     ("Medium", "$\\alpha=15^\\circ$", "naca0012_aoa15"),
-                                    ("Fine", "$\\alpha=15^\\circ$", "naca0012_aoa15_fine")):
+                                    ("Fine", "$\\alpha=15^\\circ$", "naca0012_aoa15_fine"),
+                                    ("Coarse", "$\\alpha=15^\\circ$", "naca0012_aoa15_coarse")):
         r = next((x for x in summary if x["case"] == case), None)
         if r:
             gridhigh_rows.append(f"{label} & {mesh_label} & {fmt(float(r['Cl']))} & {fmt(float(r['Cd']))} \\\\")
