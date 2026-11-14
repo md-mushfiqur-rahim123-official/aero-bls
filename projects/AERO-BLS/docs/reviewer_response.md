@@ -2,7 +2,7 @@
 
 **Manuscript:** Turbulent Boundary Layer Separation and Passive Drag Reduction on NACA 4-Digit Airfoils: A Validated 2D RANS Study with the k–ω SST Model
 **Decision under review:** 42/100 — Major Revision / Reject (top-tier)
-**Revision outcome:** Manuscript reframed as a low-Reynolds-number transition/LSB study; 2D device sections demoted to a negative-control appendix; URANS fine-grid campaign added; validation re-anchored to Reynolds-matched data.
+**Revision outcome:** Manuscript reframed as a low-Reynolds-number transition/LSB study; 2D device sections demoted to a negative-control appendix; URANS campaign on the 50-chord-farfield grid added; validation re-anchored to Reynolds-matched data.
 
 We thank the reviewer for a rigorous and constructive assessment. We accept the central criticisms: the original framing overstated the contribution, the validation mixed Reynolds numbers, and the stall-region results were presented with more confidence than the grid and solver support. Below we respond to each point and describe the corresponding change.
 
@@ -52,7 +52,7 @@ We thank the reviewer for a rigorous and constructive assessment. We accept the 
 
 **Reviewer:** Polar O-grid cells near the stagnation region are highly non-orthogonal (numerical diffusion in OpenFOAM), and 20c→50c farfield moves lift by 2.7% — the domain was not converged either.
 
-**Response: Accepted with scope note.** The polar O-grid concentrates non-orthogonality at the nose and in the wake cut; bounded schemes (limited linear divergence, limitedLinear convection) keep the solution stable, but the reviewer is right that this degrades accuracy where it matters most. **Changes:** (i) the URANS campaign runs on a refined farfield (50c) fine grid; (ii) the farfield study is promoted from appendix detail to the mesh-quality discussion; (iii) a wake-aligned C-topology is listed as the required next step for journal-grade stall accuracy rather than claimed as solved; (iv) max non-orthogonality per mesh is now reported in the mesh metadata and the paper's mesh table.
+**Response: Accepted with scope note.** The polar O-grid concentrates non-orthogonality at the nose and in the wake cut; bounded schemes (limited linear divergence, limitedLinear convection) keep the solution stable, but the reviewer is right that this degrades accuracy where it matters most. **Changes:** (i) the URANS campaign runs on the refined farfield (50c) grid at medium surface density; (ii) the farfield study is promoted from appendix detail to the mesh-quality discussion; (iii) a wake-aligned C-topology is listed as the required next step for journal-grade stall accuracy rather than claimed as solved; (iv) max non-orthogonality per mesh is now reported in the mesh metadata and the paper's mesh table.
 
 ## Summary of changes
 
@@ -61,7 +61,7 @@ We thank the reviewer for a rigorous and constructive assessment. We accept the 
 | 1. Novelty | Reframed as V&V/reference study; realistic journal tier; novelty claims removed |
 | 2. 2D devices | Demoted to negative-control appendix; no device claims from 2D |
 | 3. Grid at stall | Fine grid primary at stall; medium-grid envelope labelled as such |
-| 4. Steady stall | URANS fine-grid low-Re campaign added; steady results restricted to attached range |
+| 4. Steady stall | URANS low-Re campaign on the 50c farfield grid added; steady results restricted to attached range |
 | 5. Drag ×2 | Headline MAE vs mismatched Re withdrawn; laminar-run drag budget explained |
 | 6. Re mismatch | All quantitative metrics now Reynolds-matched (Sandia primary) |
 | 7. Mesh/farfield | 50c farfield URANS grid; non-orthogonality reported; C-topology future work |
