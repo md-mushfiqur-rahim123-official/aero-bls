@@ -53,6 +53,10 @@ def read_coefficients(case):
     if not rows:
         return None
     rows.sort(key=lambda r: r[0])
+    dedup = {}
+    for r in rows:
+        dedup[round(r[0], 6)] = r
+    rows = [dedup[k] for k in sorted(dedup)]
     arr = np.array(rows)
     return arr[:, 0], arr[:, 1], arr[:, 2], arr[:, 3]
 
@@ -152,6 +156,8 @@ def main():
     for row in rows:
         case = os.path.join(ROOT, "openfoam_cases", row["case"])
         t, cd, cl, _ = read_coefficients(case)
+        u_inf = float(row["reynolds"]) * 1.5e-5
+        t = t * u_inf
         c = colors.get(str(int(row["alpha_deg"])), None)
         a = int(row["alpha_deg"])
         axes[0].plot(t, cl, lw=0.8, color=c, label=rf"$\alpha={a}^\circ$")
@@ -161,10 +167,10 @@ def main():
         if not np.isnan(row["exp_Cl"]):
             axes[0].axhline(row["exp_Cl"], color=c, ls=":", lw=1.2,
                             alpha=0.8)
-    axes[0].set_xlabel(r"$t$ (convective units, $c/U_\infty$)")
+    axes[0].set_xlabel(r"$t^*$ ($c/U_\infty$; one unit = one flow pass)")
     axes[0].set_ylabel(r"$C_L$")
     axes[0].set_title("URANS lift history (dashed: mean, dotted: Sheldahl exp.)")
-    axes[1].set_xlabel(r"$t$ (convective units, $c/U_\infty$)")
+    axes[1].set_xlabel(r"$t^*$ ($c/U_\infty$; one unit = one flow pass)")
     axes[1].set_ylabel(r"$C_D$")
     axes[1].set_title("URANS drag history (dashed: mean)")
     axes[0].legend(frameon=False, fontsize=9)
