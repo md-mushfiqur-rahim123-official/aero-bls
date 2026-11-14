@@ -1,4 +1,11 @@
 {
+  "primary_validation": "low_re_sandia",
+  "reynolds_matched": {
+    "low_re_sandia": true,
+    "naca0012_ladson": false,
+    "cp_mae_gregory": false,
+    "cfl3d_sst_verification": false
+  },
   "low_re_sandia": {
     "FT": {
       "cl_mae_prestall": 0.029037234297295832,
@@ -83,9 +90,9 @@
     }
   ],
   "notes": [
-    "CFD at Re=1e6, fully turbulent k-omega SST; Ladson data Re=6e6, tripped.",
-    "Fully turbulent CFD overpredicts drag vs tripped experiment; expected bias.",
-    "SAND80-2114 comparison at Re=3.6e5 free transition: gamma-Re_thetat closure expected closer than fully turbulent.",
-    "Gregory Cp data Re=2.88e6; TMR recommends it for surface-pressure validation."
+    "PRIMARY validation: SAND80-2114 at Re=3.6e5 free transition (Reynolds-matched; only source of headline MAE).",
+    "Ladson (Re=6e6, tripped), Abbott (Re=6e6), Gregory (Re=2.88e6): 3-6x the simulated Re=1e6; per-alpha errors are QUALITATIVE trend checks only, not headline metrics.",
+    "Fully turbulent CFD drag bias vs tripped experiment decomposed in the drag-budget section: absent laminar run + Re gap.",
+    "Gregory Cp data Re=2.88e6; TMR recommends it for surface-pressure validation (trend use here)."
   ]
 }

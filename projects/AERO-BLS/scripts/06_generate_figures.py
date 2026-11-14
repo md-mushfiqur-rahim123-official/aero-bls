@@ -36,7 +36,7 @@ def load_summary():
 
 
 EXCLUDE_SUBSTRINGS = ("serr", "coarse", "fine", "farfield", "long",
-                      "_re1e5", "_re3e5", "tub")
+                      "_re1e5", "_re3e5", "tub", "urans")
 
 
 def core_cases(summary, airfoil, reynolds=1e6):
@@ -50,7 +50,7 @@ def variant_cases(summary, airfoil, reynolds=1e6):
     """Cases for one device variant (baseline/serrated/tubercle) at one Re."""
     rows = [r for r in summary
             if r["airfoil"] == airfoil and float(r["reynolds"]) == reynolds
-            and all(s not in r["case"] for s in ("coarse", "fine", "farfield", "long"))]
+            and all(s not in r["case"] for s in ("coarse", "fine", "farfield", "long", "urans"))]
     return sorted(rows, key=lambda r: float(r["alpha_deg"]))
 
 
@@ -133,7 +133,7 @@ def fig0_mesh():
     ax.set_aspect("equal")
     ax.set_xlabel("$x/c$")
     ax.set_ylabel("$y/c$")
-    ax.set_title("Polar O-grid near the NACA 0012 (medium density, 33{,}740 cells)")
+    ax.set_title("Polar O-grid near the NACA 0012 (medium density, 33,740 cells)")
     fig.savefig(os.path.join(FIGS, "fig0_mesh.png"))
     plt.close(fig)
 

@@ -1,0 +1,2 @@
+openfoam_cases/naca0012tr_aoa12_re360k_urans
+openfoam_cases/naca0012tr_aoa15_re360k_urans

@@ -1,0 +1,43 @@
+/*--------------------------------*- C++ -*----------------------------------*\\
+\| =========                 |                                                 |
+\| \\      /  F ield         | OpenFOAM                                        |
+\|  \\    /   O peration     | Version:  v2412                                 |
+\|   \\  /    A nd           |                                                 |
+\|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      omega;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 -1 0 0 0 0];
+
+internalField   uniform __OMEGAINF__;
+
+boundaryField
+{
+    airfoil
+    {
+        type            omegaWallFunction;
+        value           uniform __OMEGAINF__;
+    }
+    farfield
+    {
+        type            freestream;
+        freestreamValue uniform __OMEGAINF__;
+    }
+    front
+    {
+        type            empty;
+    }
+    back
+    {
+        type            empty;
+    }
+}
+
+// ************************************************************************* //
