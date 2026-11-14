@@ -426,18 +426,27 @@ def main():
 
     conv_fig = os.path.join(LATEX, "figures", "appendix_convergence.png")
     fig, ax = plt.subplots(figsize=(6.4, 3.6))
+    ax2 = ax.twinx()
     for case, color in (("naca0012_aoa5", "tab:blue"), ("naca0012_aoa15", "tab:red")):
         path = os.path.join(RESULTS, "convergence", case + ".csv")
         if os.path.exists(path):
             rows = list(csv.DictReader(open(path)))
             t = [float(r["time"]) for r in rows]
-            ax.plot(t, [float(r["Cl"]) for r in rows], color=color, label=f"{case} $C_L$")
-            ax.plot(t, [float(r["Cd"]) for r in rows], "--", color=color, alpha=0.6,
-                    label=f"{case} $C_D$")
+            cl = [float(r["Cl"]) for r in rows]
+            cd = [float(r["Cd"]) for r in rows]
+            bad = [i for i in range(len(t))
+                   if abs(cl[i]) >= 3 * abs(cl[-1]) or abs(cd[i]) >= 3 * abs(cd[-1])]
+            start = (bad[-1] + 1) if bad else 0
+            ax.plot(t[start:], cl[start:], color=color, label=f"{case} $C_L$")
+            ax2.plot(t[start:], cd[start:], "--", color=color, alpha=0.6,
+                     label=f"{case} $C_D$")
     ax.set_xlabel("Iteration")
-    ax.set_ylabel("Coefficient")
+    ax.set_ylabel("$C_L$")
+    ax2.set_ylabel("$C_D$")
     ax.set_title("Force convergence history")
-    ax.legend(fontsize=8)
+    handles = ax.get_legend_handles_labels()[0] + ax2.get_legend_handles_labels()[0]
+    labels = ax.get_legend_handles_labels()[1] + ax2.get_legend_handles_labels()[1]
+    ax.legend(handles, labels, fontsize=8, loc="center right")
     fig.savefig(conv_fig)
     plt.close(fig)
 
