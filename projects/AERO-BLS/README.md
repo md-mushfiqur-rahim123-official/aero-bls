@@ -36,7 +36,7 @@ question retained as an explicit **2D negative control** (Appendix D of the pape
 projects/AERO-BLS/
 ├── airfoils/            # analytic NACA 4-digit coordinates (638 pts)
 ├── mesh/                # generated Gmsh v2.2 hex meshes + metadata
-├── openfoam_cases/      # base_case templates + 123 staged cases (incl. URANS subset)
+├── openfoam_cases/      # base_case templates + 123 steady cases + 2 URANS cases
 ├── scripts/             # 00–10 pipeline (see below)
 ├── data/
 │   ├── experimental/    # NASA TMR .dat reference files
