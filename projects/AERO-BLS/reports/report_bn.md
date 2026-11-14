@@ -101,7 +101,7 @@
 
 | ফাইল | বিবরণ |
 |---|---|
-| `latex/main.pdf` | ২৭ পৃষ্ঠার পূর্ণ গবেষণা পত্র (১৬ চিত্র, সব টেবিল) |
+| `latex/main.pdf` | ২৮ পৃষ্ঠার পূর্ণ গবেষণা পত্র (১৬ চিত্র, সব টেবিল) |
 | `poster/poster.html` | A0 প্রিন্ট-রেডি পোস্টার (Plotly ইন্টার‍্যাক্টিভ) |
 | `data/results/summary.csv` | ১২৩ steady কেসের সম্পূর্ণ ফলাফল |
 | `data/validation/` | CFD বনাম পরীক্ষণ তুলনা (Sandia = primary) |
