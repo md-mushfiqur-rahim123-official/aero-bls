@@ -199,7 +199,9 @@ def main():
                                     ("Fine", "$\\alpha=12^\\circ$", "naca0012_aoa12_fine"),
                                     ("Medium", "$\\alpha=15^\\circ$", "naca0012_aoa15"),
                                     ("Fine", "$\\alpha=15^\\circ$", "naca0012_aoa15_fine"),
-                                    ("Coarse", "$\\alpha=15^\\circ$", "naca0012_aoa15_coarse")):
+                                    ("Coarse", "$\\alpha=15^\\circ$", "naca0012_aoa15_coarse"),
+                                    ("Medium", "$\\alpha=18^\\circ$", "naca0012_aoa18"),
+                                    ("Fine", "$\\alpha=18^\\circ$", "naca0012_aoa18_fine")):
         r = next((x for x in summary if x["case"] == case), None)
         if r:
             v = r.get("sep_upper", "")
