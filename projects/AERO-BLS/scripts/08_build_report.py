@@ -95,6 +95,7 @@ def main():
         name = r["case"]
         return (float(r["reynolds"]) == 1e6 and name == f"{r['airfoil']}_aoa{int(float(r['alpha_deg']))}")
     core = [r for r in summary if is_core(r)]
+    core.sort(key=lambda r: float(r["alpha_deg"]))
     cl0 = get(core, "naca0012", 0)
     m["ClZeroZeroOneTwoZero"] = fmt(cl0) if cl0 is not None else "n/a"
     m["SepAten"] = sep_text(core, "naca0012", 10)
@@ -148,7 +149,7 @@ def main():
     def re_sep(r):
         v = r.get("sep_upper", "")
         return f"{float(v):.2f}" if v and v not in ("None", "") else "$>0.99$ (attached)"
-    re_label = {100000.0: "$10^5$", 300000.0: "$3\\times10^5$", 1000000.0: "$10^6$"}
+    re_label = {100000.0: "$10^5$", 300000.0: "$3\\times10^5$", 360000.0: "$3.6\\times10^5$", 1000000.0: "$10^6$"}
     m["ReTableRows"] = "\n    ".join(
         f"{re_label.get(float(re), f'{re:.0e}')} & {fmt(float(r['Cl']))} & {fmt(float(r['Cd']))} & "
         f"{fmt(float(r['Cl_Cd']), 1)} & {re_sep(r)} \\\\"
@@ -295,7 +296,11 @@ def main():
             def cell(v, nd=4):
                 return f"{v:.{nd}f}" if v is not None else "--"
             def sep_cell(v):
-                return f"{v:.2f}" if v is not None else "attached"
+                if v is None:
+                    return "attached"
+                if abs(v) < 0.005:
+                    return "0.00 (LE)"
+                return f"{v:.2f}"
             tr_rows.append(
                 f"{af.upper()} & {alpha} & {cell(cl_ft)} & {cell(cl_tr)} & "
                 f"{cell(dcl, 1)} & {cell(cd_ft)} & {cell(cd_tr)} & {cell(dcd, 1)} & "
