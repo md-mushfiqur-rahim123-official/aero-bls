@@ -95,13 +95,23 @@ sensitivity of the high-alpha matrix is therefore confined to the stall-onset an
 The case matrix is now 125 runs (123 steady + 2 URANS); tab:gridhigh, Appendix A,
 Table 5, and the case tree in `openfoam_cases/` are updated accordingly.
 
-## 2. URANS horizon extension (statistical stationarity)
+## 2. URANS horizon extension (statistical stationarity) — COMPLETED
 
 Both URANS cases were reconfigured from endTime t = 0.25 s (t* = 1.35) to endTime
-t = 1.0 s (t* = 5.4), with field output every 0.05 s, and are being re-integrated.
-The alpha = 15 deg case required a restart at dt = 3.4e-5 s after an abort in the
-gamma-Re_thetat correlation solve at the nominal step (the same remedy as the earlier
-alpha = 12 deg restart). When the extended horizon accumulates, the production window
-will be widened (target t = 0.15-0.45 s, t* = 0.81-2.4, n ~ 61) and the URANS section,
-tab:urans, and the force-history figure regenerated. A fully stationary 5-8-flow-pass
-average remains out of reach of the present compute budget and stays listed as future work.
+t = 1.0 s (t* = 5.4), with field output every 0.05 s, and re-integrated. Both required
+a restart at dt = 3.4e-5 s after solver failures of the gamma-Re_thetat correlations at
+the nominal step. The production window is now t = 0.15-0.45 s (t* = 0.81-2.4, n = 61),
+doubling the statistical sample. Extended-window results (Section 4.12, tab:urans,
+Figure 15 updated):
+
+| alpha | Cl (URANS, extended) | Cd (URANS, extended) | steady Cl/Cd | exp Cl/Cd |
+|-------|----------------------|----------------------|--------------|-----------|
+| 12 deg | 1.322 +/- 0.068 | 0.134 +/- 0.055 | 1.039 / 0.040 | 0.483 / 0.022 |
+| 15 deg | 1.415 +/- 0.108 | 0.307 +/- 0.073 | 1.058 / 0.075 | 0.331 / 0.190 |
+
+The non-attractor finding is strengthened: the means still drift upward through the
+doubled window (lift excess over steady grows from 22-29% to 27-34%), and at alpha = 15 deg
+the steady and URANS mean drags now bracket the experiment (0.075 / 0.307 versus 0.190),
+confirming that horizon-averaged loads of this non-stationary system depend on the window.
+A fully stationary 5-8-flow-pass average remains out of reach of the present compute budget
+and stays listed as future work.
